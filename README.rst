@@ -1,4 +1,6 @@
-# Deeptracy plugin repository
+Deeptracy plugin repository
+===========================
+
 
 .. image::  https://raw.githubusercontent.com/BBVA/deeptracy/develop/docs/_static/deeptracy-logo-small.png
     :alt: Deeptracy logo
