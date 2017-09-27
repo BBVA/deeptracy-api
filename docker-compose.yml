@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+
+  postgres:
+    image: postgres:9.6-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+  redis:
+    image: redis:3-alpine
+    ports:
+      - 6379:6379

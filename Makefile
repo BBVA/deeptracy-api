@@ -1,6 +1,4 @@
-.PHONY: help clean clean-build clean-pyc clean-test
 .DEFAULT_GOAL := help
-
 
 # AutoEnv
 ENV ?= .env
@@ -21,48 +19,64 @@ for line in sys.stdin:
 endef
 export PRINT_HELP_PYSCRIPT
 
+.PHONY: help
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
+.PHONY: clean
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
 
+.PHONY: clean-build
 clean-build: ## remove build artifacts
 	rm -rf build dist .eggs .cache
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
+.PHONY: clean-pyc
 clean-pyc: ## remove Python file artifacts
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
 
+.PHONY: clean-test
 clean-test: ## remove test and coverage artifacts
 	rm -rf .tox .coverage htmlcov coverage-reports
 
-install-%:
-	@pip install -r $*.txt -U
+.PHONY: test
+test: install ## run tests quickly with the default Python
+	python -m unittest discover -s tests/unit
 
-lint: install-requirements_dev ## check style with flake8
-	flake8 deptracy
-
-test: install-requirements_dev ## run tests quickly with the default Python
-	py.test
-
+.PHONY: test-all
 test-all: ## run tests on every Python version with tox
 	tox
 
-coverage: install-requirements_dev ## check code coverage quickly with the default Python
-	coverage run -m pytest
+install-%:
+	pip install -r $*.txt -U
+
+.PHONY: lint
+lint: ## check style with flake8
+	flake8 deeptracy
+
+.PHONY: coverage
+coverage: install ## check code coverage
+	coverage run --source=deeptracy -m unittest  discover -s tests/unit
 	coverage report -m --fail-under 80
-	coverage html
+	coverage xml -o coverage-reports/report.xml
 
 .PHONY: docs
 docs: ## generate and shows documentation
-	@make -C docs spelling html
-	# Replace files with .md extension with .html extension
-	@find ./docs/_build/ -name '*.html' -exec sed -i 's/\(\w*\)\.md\(W*\)/\1.html\2/g' {} \;
-	@python -m webbrowser -t docs/_build/html/index.html
+	@make -C docs html
 
-run: install-requirements ## run locally your application
-	gunicorn --bind=0.0.0.0:8000 --worker-class=gevent --timeout=0 deptracy.app:app
+.PHONY: run
+run: ## local run the API
+	./run.sh
+
+.PHONY: demo
+demo: ## local run the app
+	python demo.py
+
+.PHONY: behave
+behave: ## run behave tests
+	behave --no-capture --no-capture-stderr tests/acceptance/features
+
