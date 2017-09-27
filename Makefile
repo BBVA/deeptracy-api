@@ -44,7 +44,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -rf .tox .coverage htmlcov coverage-reports
 
 .PHONY: test
-test: install ## run tests quickly with the default Python
+test: ## run tests quickly with the default Python
 	python -m unittest discover -s tests/unit
 
 .PHONY: test-all
@@ -56,11 +56,11 @@ install-%:
 
 .PHONY: lint
 lint: ## check style with flake8
-	flake8 deeptracy
+	flake8 deeptracy_api
 
 .PHONY: coverage
-coverage: install ## check code coverage
-	coverage run --source=deeptracy -m unittest  discover -s tests/unit
+coverage: ## check code coverage
+	coverage run --source=deeptracy_api -m unittest  discover -s tests/unit
 	coverage report -m --fail-under 80
 	coverage xml -o coverage-reports/report.xml
 
@@ -71,10 +71,6 @@ docs: ## generate and shows documentation
 .PHONY: run
 run: ## local run the API
 	./run.sh
-
-.PHONY: demo
-demo: ## local run the app
-	python demo.py
 
 .PHONY: behave
 behave: ## run behave tests
