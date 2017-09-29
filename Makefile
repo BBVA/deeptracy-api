@@ -72,7 +72,10 @@ docs: ## generate and shows documentation
 run: ## local run the API
 	./run.sh
 
-.PHONY: behave
-behave: ## run behave tests
-	behave --no-capture --no-capture-stderr tests/acceptance/features
+.PHONY: behave_local
+behave_local: ## run behave tests in local environment
+	LOCAL_BEHAVE=True behave --no-capture --no-capture-stderr tests/acceptance/features
 
+.PHONY: behave
+behave: ## run behave tests in docker environment
+	behave --no-capture --no-capture-stderr tests/acceptance/features

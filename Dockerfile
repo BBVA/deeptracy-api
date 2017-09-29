@@ -11,12 +11,12 @@ RUN pip install -r /tmp/install/requirements.txt
 RUN rm -rf /tmp/install
 
 # add sources
-ADD deeptracy /opt/deeptracy/deeptracy
+ADD deeptracy_api /opt/deeptracy/deeptracy_api
 
 # add run script
 ADD wait-for-it.sh /opt/deeptracy
-ADD run_api.sh /opt/deeptracy
-RUN chmod +x /opt/deeptracy/run_api.sh
+ADD run.sh /opt/deeptracy
+RUN chmod +x /opt/deeptracy/run.sh
 
 WORKDIR /opt/deeptracy
-CMD ["/opt/deeptracy/run_api.sh"]
+CMD ["/opt/deeptracy/run.sh"]

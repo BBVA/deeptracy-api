@@ -1,28 +1,28 @@
 import os
 import time
-
-from celery import Celery
-import deeptracy_core.dal.database as database
+import sqlalchemy
 
 
 def before_all(context):
-    # os.system('docker-compose -f tests/acceptance/docker-compose.yml rm -f')
-    # os.system('docker-compose -f tests/acceptance/docker-compose.yml -p deeptracy_acceptance up -d --build')
-    # time.sleep(5)
+    """For LOCAL_BEHAVE you need to setup the environment manually"""
 
-    # set environment
-    database.DATABASE_URI = "postgresql://postgres:postgres@127.0.0.1:5432/deeptracy_test"
-    context.BROKER_URI = "redis://127.0.0.1:6379/1"
     context.SERVER_ADDRESS = 'localhost:8080'
-    context.GUNICORN_WORKERS = 5
 
-    database.db.init_engine()  # Init database engine
+    if os.environ['LOCAL_BEHAVE'] is None:
+        # set environment
+        os.environ['DATABASE_URI'] = 'postgresql://postgres:postgres@127.0.0.1:5432/deeptracy_test'
+        os.environ['BROKER_URI'] = 'redis://127.0.0.1:6379/1'
+        os.environ['SERVER_ADDRESS'] = context.SERVER_ADDRESS
+        os.environ['GUNICORN_WORKERS'] = '1'
 
-    # context.celery = Celery('deeptracy_test', broker=context.BROKER_URI)
+        os.system('docker-compose -f tests/acceptance/docker-compose.yml rm -f')
+        os.system('docker-compose -f tests/acceptance/docker-compose.yml -p deeptracy_acceptance up -d --build')
+        time.sleep(5)
+
+    context.engine = sqlalchemy.create_engine(os.environ['DATABASE_URI'])
 
 
 def after_all(context):
-    #os.system('docker-compose -f tests/acceptance/docker-compose.yml kill')
-    #os.system('docker-compose -f tests/acceptance/docker-compose.yml rm -f')
-    #os.system('rm -rf {}'.format(context.SCAN_PATH))
-    pass
+    if os.environ['LOCAL_BEHAVE'] is None:
+        os.system('docker-compose -f tests/acceptance/docker-compose.yml kill')
+        os.system('docker-compose -f tests/acceptance/docker-compose.yml rm -f')

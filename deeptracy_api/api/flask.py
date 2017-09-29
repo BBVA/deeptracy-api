@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from flask import Flask
 from flask_cors import CORS
 
-from deeptracy.api.project_blueprint import project
+from deeptracy_api.api.project_blueprint import project
 
 
 def setup_api():
