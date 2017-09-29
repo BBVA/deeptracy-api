@@ -12,12 +12,15 @@ def step_impl(context, method, endpoint, payload):
 
 @then(u'the api response code is {response_code}')
 def step_impl(context, response_code):
+    json_data = context.last_response.text
+
     assert context.last_response.status_code == int(response_code)
 
 
 @then(u'the api response payload is {response}')
 def step_impl(context, response):
     json_data = json.loads(context.last_response.text)
+
     json_expected = json.loads(response)
 
     context.last_project_id = json_data.get('id', None)

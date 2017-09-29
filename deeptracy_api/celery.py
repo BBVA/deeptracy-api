@@ -1,5 +1,5 @@
 from celery import Celery
-from deeptracy.config import BROKER_URI
+from deeptracy_api.config import BROKER_URI
 
 
 celery = None

@@ -6,6 +6,7 @@ from behave import then
 @then(u'{created} celery tasks of type start_scan are in the broker')
 def step_impl(context, created):
     created = int(created)
+
     # assert that only 1 task in the celery queue
     task_found = context.redis_db.llen('celery')
     assert task_found == created
