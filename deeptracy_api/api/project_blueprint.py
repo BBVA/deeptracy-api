@@ -1,35 +1,39 @@
 # -*- coding: utf-8 -*-
+"""Blueprint for project endpoints"""
 
-from flask import Blueprint, request, Response, json
+from flask import Blueprint, request
 from flask import jsonify
-from deeptracy_core.dal.project.manager import get_project_list, add_project
+from deeptracy_core.dal.project.manager import add_project
 from deeptracy_core.dal.database import db
+
+from deeptracy_api.api.utils import api_error_response
 
 
 project = Blueprint("project", __name__)
 
 
-def api_error(msg: str):
-    return jsonify({'error': {'msg': msg}})
-
-
-@project.route("/", methods=["GET"])
-def get_project():
-    with db.session_scope() as session:
-        project_list = get_project_list(session)
-        return jsonify([item.to_dict() for item in project_list]), 200
-
-
 @project.route("/", methods=["POST"])
 def post_project():
+    """Adds a project to the database
+
+    It receive a Project in the body as a json object and tries to create the project in the database
+
+    Example:
+        Body
+        {"repo": "http://google.com"}
+
+    :return codes:  201 on success
+                    400 on errors
+                    409 on a duplicate repo
+    """
 
     data = request.get_json()
     if not data:
-        return api_error('invalid payload'), 400
+        return api_error_response('invalid payload'), 400
 
     repo = data.get('repo', None)
     if repo is None or repo == '':
-        return api_error('missing repo'), 400
+        return api_error_response('missing repo'), 400
 
     session = db.Session()
     try:
@@ -38,8 +42,8 @@ def post_project():
     except Exception as exc:
         session.rollback()
         if 'unique constraint "project_repo_key"' in exc.args[0]:
-            return api_error('unique constraint project repo {}'.format(repo)), 409
+            return api_error_response('unique constraint project repo {}'.format(repo)), 409
         else:
-            return api_error(exc.args[0]), 400
+            return api_error_response(exc.args[0]), 400
 
     return jsonify(project.to_dict()), 201
