@@ -18,7 +18,7 @@ def before_all(context):
 
         os.system('docker-compose -f tests/acceptance/docker-compose.yml rm -f')
         os.system('docker-compose -f tests/acceptance/docker-compose.yml up -d --build')
-        time.sleep(5)
+        time.sleep(10)
 
     context.SERVER_ADDRESS = os.environ['SERVER_ADDRESS']
     context.BROKER_URI = os.environ['BROKER_URI']
