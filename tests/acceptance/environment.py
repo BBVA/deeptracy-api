@@ -11,7 +11,7 @@ def before_all(context):
 
     if os.environ.get('LOCAL_BEHAVE', None) is None:
         # set environment
-        os.environ['DATABASE_URI'] = 'postgresql://postgres:postgres@127.0.0.1:5432/deeptracy_test'
+        os.environ['DATABASE_URI'] = 'postgresql://postgres:postgres@127.0.0.1:5433/deeptracy_test'
         os.environ['BROKER_URI'] = 'redis://127.0.0.1:6379'
         os.environ['SERVER_ADDRESS'] = '127.0.0.1:8080'
         os.environ['GUNICORN_WORKERS'] = '1'
@@ -31,7 +31,7 @@ def after_all(context):
     if os.environ.get('LOCAL_BEHAVE', None) is None:
         os.system('docker-compose -f tests/acceptance/docker-compose.yml stop')
         os.system('docker-compose -f tests/acceptance/docker-compose.yml rm -f')
-        
+
 
 def _setup_redis(uri: dict) -> redis.StrictRedis:
     _, netloc, path, _, _, _ = urlparse(uri)
