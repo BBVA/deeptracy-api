@@ -12,10 +12,10 @@ Feature: Create new projects
     And <created> projects are in the database
 
     Examples:
-      | payload                      | response_code | response                                              | created |
-      | {"repo":"http://google.com"} | 201           | {"id": "ID", "repo": "http://google.com", "scans": 0} | 1       |
-      | {"repo":""}                  | 400           | {"error": {"msg": "missing repo"}}                    | 0       |
-      | {}                           | 400           | {"error": {"msg": "invalid payload"}}                 | 0       |
+      | payload                      | response_code | response                                                                              | created |
+      | {"repo":"http://google.com"} | 201           | {"id": "ID", "repo": "http://google.com", "scans": 0, "hookData": "", "hookType": ""} | 1       |
+      | {"repo":""}                  | 400           | {"error": {"msg": "missing repo"}}                                                    | 0       |
+      | {}                           | 400           | {"error": {"msg": "invalid payload"}}                                                 | 0       |
 
   Scenario: Add a project with a duplicated repo is forbidden
     When the user makes a "POST" request to "/api/1/project/" endpoint with {"repo":"http://google.com"}

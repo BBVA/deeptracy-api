@@ -25,23 +25,27 @@ def step_impl(context):
 
 @when(u'a project with id "{project_id}" exists in the database')
 def step_impl(context, project_id):
-    sql = text('INSERT INTO project (id, repo) VALUES (:id, :repo)')
-    context.engine.execute(sql, id=project_id, repo="htts://test.com")
+    sql = text('INSERT INTO project (id, repo, hook_data, hook_type) VALUES (:id, :repo, \'\', \'\')')
+    context.engine.execute(sql, id=project_id, repo='http://test{}.com'.format(project_id))
 
 
 @then(u'project with id "{project_id}" is not in the database')
 def step_impl(context, project_id):
-    sql = text("SELECT * FROM project WHERE project.id = '" + project_id + "'")
+    sql = text('SELECT * FROM project WHERE project.id = \'{}\''.format(project_id))
     results = context.engine.execute(sql).fetchall()
 
-    # assert len(results) == 0
+    assert len(results) == 0
+
 
 @then(u'table projects is empty')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Then table projects is empty')
+    sql = text('SELECT * FROM project')
+    results = context.engine.execute(sql).fetchall()
+
+    assert len(results) == 0
 
 
-@when(u'the user makes a "DELETE" request to "/api/1/project/" endpoint')
+@when(u'the user makes a "{method}" request to "/api/1/project/" endpoint')
 def step_impl(context):
     raise NotImplementedError(u'STEP: When the user makes a "DELETE" request to "/api/1/project/" endpoint')
 

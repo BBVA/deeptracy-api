@@ -5,25 +5,23 @@ Feature: Delete projects
   Background: Database setup
     Given an empty project table in database
 
-  @only
-  Scenario Outline: Delete project by id
-    When a project with id "<project_id>" exists in the database
-    And the user makes a "DELETE" request to "<endpoint>" endpoint with <payload>
-    Then the api response code is <response_code>
-    And the api response payload is <response>
-    And project with id "<project_id>" is not in the database
+  Scenario: Delete project by id
+    When a project with id "0000001" exists in the database
+    And the user makes a "DELETE" request to "/api/1/project/0000001" endpoint with empty
+    Then the api response code is 204
+    And the api response payload is empty
+    And project with id "0000001" is not in the database
 
-    Examples:
-      | project_id               |  endpoint                          | response_code       |  response                                 |  payload       |
-      | 0000001                  |  /api/1/project/0000002            | 404                 |  {"error": {"msg": "project not found"}}  |  empty         |
-      | 0000001                  |  /api/1/project/0000001            | 204                 |  empty                                    |  empty         |
+  Scenario: Try to delete project that does not exist
+    When a project with id "0000001" exists in the database
+    And the user makes a "DELETE" request to "/api/1/project/0000002" endpoint with empty
+    Then the api response code is 404
+    And the api response payload is {"error": {"msg": "project not found"}}
 
-  Scenario Outline: Delete projects
-    When the user makes a "DELETE" request to "<endpoint>" endpoint
-    Then the api response code is <response_code>
-    And the api response payload is <response>
+   Scenario: Delete projects
+    When a project with id "0000001" exists in the database
+    And a project with id "0000002" exists in the database
+    When the user makes a "DELETE" request to "/api/1/project/" endpoint with empty
+    Then the api response code is 204
+    And the api response payload is empty
     And table projects is empty
-
-    Examples:
-      |  endpoint                          | response_code       |   response   |
-      |  /api/1/project/                   | 204                 |   empty      |
