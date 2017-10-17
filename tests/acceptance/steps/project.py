@@ -39,8 +39,14 @@ def step_impl(context):
 
 @when(u'a project with id "{project_id}" exists in the database')
 def step_impl(context, project_id):
-    sql = text('INSERT INTO project (id, repo, hook_data, hook_type) VALUES (:id, :repo, \'\', \'\')')
-    context.engine.execute(sql, id=project_id, repo='http://test{}.com'.format(project_id))
+    sql = text('INSERT INTO project (id, repo, hook_data, hook_type, repo_auth_type) '
+               'VALUES (:id, :repo, :hook_data, :hook_type, :repo_auth_type)')
+    context.engine.execute(sql,
+                           id=project_id,
+                           repo='http://test{}.com'.format(project_id),
+                           hook_type='NONE',
+                           hook_data='',
+                           repo_auth_type='PUBLIC')
 
 
 @then(u'project with id "{project_id}" is not in the database')

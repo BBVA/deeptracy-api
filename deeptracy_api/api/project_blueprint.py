@@ -48,10 +48,19 @@ def add_project():
     repo = data.get('repo', None)
     if repo is None or repo == '':
         return api_error_response('missing repo'), 400
+    else:
+        data.pop('repo')  # repo should not be present in data
 
     with db.session_scope() as session:
         try:
-            project = project_manager.add_project(repo, session)
+            print('--------')
+            print('--------')
+            print('--------')
+            print(data)
+            print('--------')
+            print('--------')
+            print('--------')
+            project = project_manager.add_project(repo, session, **data)
             session.commit()
         except Exception as exc:
             session.rollback()

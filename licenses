@@ -1,0 +1,101 @@
+Flask-Cors (3.0.3) 
+    License: MIT
+
+Flask (0.12.2) 
+    License: BSD
+
+Jinja2 (2.9.6) 
+    License: BSD
+
+MarkupSafe (1.0) 
+    License: BSD
+
+SQLAlchemy-Utils (0.32.16) 
+    License: BSD
+
+SQLAlchemy (1.1.14) 
+    License: MIT License
+
+Werkzeug (0.12.2) 
+    License: BSD
+
+amqp (2.2.2) 
+    License: BSD
+
+billiard (3.5.0.3) 
+    License: BSD
+
+celery (4.1.0) 
+    License: BSD
+
+certifi (2017.7.27.1) 
+    License: MPL-2.0
+
+chardet (3.0.4) 
+    License: LGPL
+
+click (6.7) 
+    License: UNKNOWN
+
+deeptracy-core (0.0.14) 
+    License: UNKNOWN
+
+docker-pycreds (0.2.1) 
+    License: UNKNOWN
+
+docker (2.5.1) 
+    License: Apache License 2.0
+
+gunicorn (19.7.1) 
+    License: MIT
+
+idna (2.6) 
+    License: BSD-like
+
+itsdangerous (0.24) 
+    License: UNKNOWN
+
+kombu (4.1.0) 
+    License: BSD
+
+pip (9.0.1) 
+    License: MIT
+
+pluginbase (0.5) 
+    License: UNKNOWN
+
+psycopg2 (2.7.3.1) 
+    License: LGPL with exceptions or ZPL
+
+pytz (2017.2) 
+    License: MIT
+
+redis (2.10.6) 
+    License: MIT
+
+requests (2.18.4) 
+    License: Apache 2.0
+
+setuptools (36.5.0) 
+    License: UNKNOWN
+
+six (1.11.0) 
+    License: MIT
+
+urllib3 (1.22) 
+    License: MIT
+
+vine (1.1.4) 
+    License: BSD
+
+websocket-client (0.44.0) 
+    License: LGPL
+
+wheel (0.30.0) 
+    License: MIT
+
+yolk3k (0.9) 
+    License: BSD License
+
+Versions with '*' are non-active.
+Versions with '!' are deployed in development mode.

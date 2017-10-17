@@ -12,8 +12,8 @@ script:
 
 deploy:
 
-    # Deploy to Docker
+    # Deploy image to DockerHub
   - provider: script
-    script: deploy/docker.sh
+    script: release/image_dockerhub.sh
     on:
       branch: master

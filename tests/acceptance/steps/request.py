@@ -25,6 +25,16 @@ def step_impl(context, method, endpoint, payload):
     else:
         res = requests.request(method, endpoint, json=json.loads(payload))
 
+    print('------')
+    print('------')
+    print(res)
+    try:
+        print(json.loads(res.text))
+    except Exception:
+        pass
+    print('------')
+    print('------')
+
     context.last_response = res
 
 
@@ -48,5 +58,12 @@ def step_impl(context, response):
     else:
         json_data.pop('id', None)
         json_expected.pop('id', None)
+
+    print('------')
+    print('------')
+    print(json_data)
+    print(json_expected)
+    print('------')
+    print('------')
 
     assert json_data == json_expected
