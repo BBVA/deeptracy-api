@@ -20,31 +20,23 @@ def parse_from_bitbucket(response_data):
 
     https://confluence.atlassian.com/display/BITBUCKET/POST+Service+Management
     """
-    assert('canon_url' in response_data)
-    assert('commits' in response_data)
-    assert('repository' in response_data)
+    # assert('actor' in response_data)
+    # assert('push' in response_data)
+    # assert('repository' in response_data)
     response = {}
 
-    for commit in response_data['commits']:
-        branch_name = commit.get('branch')
+    if 'push' in response_data and 'changes' in response_data['push']:
 
-        # In BitBucket, a branch value can be null. This can happen if a push
-        # affects multiple branches (a variable 'branches' appears and the
-        # 'branch' is set to empty). It also appears to happen when multiple
-        # commits are pushed.
-        if not branch_name:
-            continue
+        repo = response_data['repository']
+        branch_name = response_data['push']['changes'][0]['new']['name']
 
         webhook = response.setdefault(branch_name, WebHookData('bitbucket'))
-        repo = response_data['repository']
-        webhook.repo_name = repo['slug']
+
+        webhook.repo_name = repo['name']
         webhook.repo_url = "%s:%s/%s.git" % \
             (settings.PROVIDERS['bitbucket']['ssh_account'],
              repo['owner'], repo['slug'])
-        webhook.ref_name = 'refs/heads/%s' % commit['branch']
+        webhook.ref_name = 'refs/heads/%s' % branch_name
         webhook.branch_name = branch_name
-        if webhook.before is None:
-            webhook.before = commit['raw_node'] + "^1"
-        webhook.after = commit['raw_node']
 
     return response.values()

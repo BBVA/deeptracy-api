@@ -30,12 +30,14 @@ def parse_data(data):
             and 'href' in data['actor']['links']['self'] \
             and 'bitbucket' in data['actor']['links']['self']['href']:
         logger.debug("BitBucket")
-        return parse_from_bitbucket(data)
+        parsed_data = parse_from_bitbucket(data)
     elif 'repository' in data and 'url' in data['repository']:
         logger.debug("GitHub")
-        return parse_from_github(data)
+        parsed_data = parse_from_github(data)
     else:
-        return []
+        parsed_data = []
+
+    return parsed_data
 
 def handle_data(response_data):
     """
