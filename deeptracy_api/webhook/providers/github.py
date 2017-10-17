@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from deeptracy_api.api.webhook import Hook
+from deeptracy_api.webhook.webhook_data import WebHookData
 
 def parse_from_github(response_data):
     """
@@ -28,7 +28,7 @@ def parse_from_github(response_data):
     repo = response_data['repository']
     ref = response_data['ref']
 
-    hook_data = Hook('github')
+    hook_data = WebHookData('github')
     hook_data.before = response_data['before']
     hook_data.after = response_data['after']
     hook_data.repo_name = response_data['repository']['name']

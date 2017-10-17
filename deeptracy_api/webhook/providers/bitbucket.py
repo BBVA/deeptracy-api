@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from deeptracy_api.api.webhook import Hook
+from deeptracy_api.webhook.webhook_data import WebHookData
 
 def parse_from_bitbucket(response_data):
     """
@@ -35,16 +35,16 @@ def parse_from_bitbucket(response_data):
         if not branch_name:
             continue
 
-        hook = response.setdefault(branch_name, Hook('bitbucket'))
+        webhook = response.setdefault(branch_name, WebHookData('bitbucket'))
         repo = response_data['repository']
-        hook.repo_name = repo['slug']
-        hook.repo_url = "%s:%s/%s.git" % \
+        webhook.repo_name = repo['slug']
+        webhook.repo_url = "%s:%s/%s.git" % \
             (settings.PROVIDERS['bitbucket']['ssh_account'],
              repo['owner'], repo['slug'])
-        hook.ref_name = 'refs/heads/%s' % commit['branch']
-        hook.branch_name = branch_name
-        if hook.before is None:
-            hook.before = commit['raw_node'] + "^1"
-        hook.after = commit['raw_node']
+        webhook.ref_name = 'refs/heads/%s' % commit['branch']
+        webhook.branch_name = branch_name
+        if webhook.before is None:
+            webhook.before = commit['raw_node'] + "^1"
+        webhook.after = commit['raw_node']
 
     return response.values()

@@ -65,6 +65,15 @@ def add_project():
 
 @project.route('/<string:project_id>', methods=["GET"])
 def get_project(project_id):
+    """Show Requested Project
+
+    Queries and returns a project with a passed ID
+
+    Example:
+
+    :return codes:  200 on success
+                    404 on errors
+    """
     with db.session_scope() as session:
         try:
             project = project_manager.get_project(project_id, session)
@@ -76,6 +85,15 @@ def get_project(project_id):
 
 @project.route('/', methods=["GET"])
 def get_projects():
+    """List Projects
+
+    Retrieves a list of all projects on database.
+
+    Example:
+
+    :return codes:  200 on success
+                    404 on errors
+    """
     with db.session_scope() as session:
         try:
             projects = project_manager.get_projects(session)
@@ -91,7 +109,7 @@ def get_projects():
 def update_project(project_id):
     """Updates a project on the database
 
-    It receive a Project in the body as a json object and tries to create the project in the database
+    Update repo url on existing project
 
     Example:
         Body

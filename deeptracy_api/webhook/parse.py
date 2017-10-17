@@ -14,9 +14,8 @@
 
 import logging
 
-from deeptracy_api.api.webhook.bitbucket import parse_from_bitbucket
-from deeptracy_api.api.webhook.github import parse_from_github
-
+from deeptracy_api.webhook.providers.bitbucket import parse_from_bitbucket
+from deeptracy_api.webhook.providers.github import parse_from_github
 
 logger = logging.getLogger(__name__)
 

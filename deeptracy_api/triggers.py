@@ -12,18 +12,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from deeptracy_core.dal.scan.manager import add_scan
+from deeptracy_core.dal.project.manager import add_project
+from deeptracy_core.dal.database import db
+
+def on_data(parsed_data):
+    print(parsed_data)
+    return
+
+def on_create():
+
+#    with db.session_scope() as session:
+#        try:
+#            project = add_project(repo, session)
+#            session.commit()
+#        except Exception as exc
+#            session.rollback()
+#
+#        return jsonify(project.to_dict())
+    return
+
+def on_commit():
+    return
 
 def on_bitbucket_commit():
     print('---- bitbucket_commit ----')
-
+    return on_commit()
 
 def on_bitbucket_create():
     print('---- bitbucket_create ----')
-
+    return on_create()
 
 def on_github_commit():
     print('---- github_commit ----')
-
+    return on_commit()
 
 def on_github_create():
     print('---- github_create ----')
+    return on_create()

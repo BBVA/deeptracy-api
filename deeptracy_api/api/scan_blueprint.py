@@ -28,6 +28,20 @@ scan = Blueprint("scan", __name__)
 
 @scan.route("/", methods=["POST"])
 def post_scan():
+    """Add a scan on the database
+
+    Add a scan language on existing project
+
+    Example:
+        Body
+        {
+          "project_id": "00001",
+          "lang": "javascript"
+        }
+
+    :return codes:  201 on success
+                    400 on errors
+    """
     with db.session_scope() as session:
         data = request.get_json()
         if not data:

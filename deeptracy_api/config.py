@@ -13,6 +13,21 @@
 # limitations under the License.
 
 import os
+from deeptracy_api.triggers import on_github_commit, on_github_create, on_bitbucket_commit, on_bitbucket_create
 
 BROKER_URI = os.environ.get('BROKER_URI')
 DATABASE_URI = os.environ.get('DATABASE_URI')
+
+PROVIDERS = {}
+
+PROVIDERS['github'] = {
+    'ssh_account' : 'git@github.com',
+    'on_commit' : on_github_commit,
+    'on_create': on_github_create
+}
+
+PROVIDERS['bitbucket'] = {
+    'ssh_account' : 'git@bitbucket.org',
+    'on_commit' : on_bitbucket_commit,
+    'on_create' : on_bitbucket_create
+}

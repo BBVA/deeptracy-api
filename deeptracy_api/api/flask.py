@@ -17,6 +17,7 @@ from flask_cors import CORS
 
 from deeptracy_api.api.project_blueprint import project
 from deeptracy_api.api.scan_blueprint import scan
+from deeptracy_api.api.webhook_blueprint import webhook
 from deeptracy_api.api.exc import APIError
 
 
@@ -44,5 +45,6 @@ def load_blueprints(flask_app):
     root = '/api/'
     prev1 = root + '1'
 
+    flask_app.register_blueprint(webhook, url_prefix=prev1 + '/webhook')
     flask_app.register_blueprint(project, url_prefix=prev1 + '/project')
     flask_app.register_blueprint(scan, url_prefix=prev1 + '/scan')
