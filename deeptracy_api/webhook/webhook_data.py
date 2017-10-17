@@ -14,10 +14,7 @@
 
 import logging
 
-from deeptracy_api.webhook.parse import parse_data
-
 logger = logging.getLogger(__name__)
-
 
 class WebHookData():
     def __init__(self, provider):
@@ -46,20 +43,3 @@ class WebHookData():
 
     def is_tag(self):
         return (self.ref_name.find('refs/tags/') == 0)
-
-
-def handle_data(response_data):
-    """
-    Automatically parse the JSON data received and dispatch the requests
-    to the appropriate handlers specified in settings.py.
-    """
-    data_list = parse_data(response_data)
-    logger.debug("raw data %s" % data_list)
-
-    for parsed_data in data_list:
-        provider_info = settings.PROVIDERS.get(parsed_data.provider, None)
-
-        if provider_info:
-            handler = provider_info.get('post_receive_handler', None)
-            if handler:
-                handler(parsed_data)
