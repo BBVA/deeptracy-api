@@ -15,6 +15,7 @@
 """
 Module for deeptracy
 """
+
 from deeptracy_core.dal.database import db
 from deeptracy_api.celery import setup_celery
 from deeptracy_api.api.flask import setup_api

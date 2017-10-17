@@ -1,0 +1,154 @@
+swagger: "2.0"
+info:
+  title: Deeptracy API
+  version: "1.0.0"
+host: api.deeptracy.com
+paths:
+  /project:
+    get:
+      summary: List Projects
+      description: |
+        Retrieves a list of all projects on database.
+      responses:
+        200:
+          description: An array of Projects
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Project'
+    post:
+      summary: Create a Project
+      description: |
+        Creates a new project in database.
+      parameters:
+        - name: project
+          in: body
+          schema:
+            $ref: '#/definitions/Project'
+      responses:
+        201:
+          description: A project.
+          schema:
+            $ref: '#/definitions/Project'
+    delete:
+      summary: Delete all Projects
+      description: |
+        Clean projects table in database.
+      responses:
+        204:
+          description: No content. All projects was removed succesfully.
+  /project/{id}:
+    get:
+      summary: Show Requested Project
+      description: |
+        Queries and returns a project with a passed ID.
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: |
+            A unique project identifier to query.
+        - name: If-None-Match
+          in: header
+          type: string
+          description: |
+            Executes a request only if passed ETag doesn't equal to current
+            resource one (i.e. resource has been changed).
+      responses:
+        200:
+          description: A project.
+          schema:
+            $ref: '#/definitions/Project'
+          headers:
+            ETag:
+              description: |
+                Entity tag is part of HTTP provided for web cache validation
+                problem, but also used for optimistic concurrency control.
+              type: string
+        404:
+          description: Project not found.
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: Update Requested Project
+      description: |
+        Update repo url on existing project
+      parameters:
+        - name: repo
+          in: body
+          type: string
+          description: |
+            A new repo url
+      responses:
+        200:
+          description: A project.
+          schema:
+            $ref: '#/definitions/Project'
+          headers:
+            ETag:
+              description: |
+                Entity tag is part of HTTP provided for web cache validation
+                problem, but also used for optimistic concurrency control.
+              type: string
+        404:
+          description: Project not found.
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Remove Requested Project
+      description: |
+        Delete a project with a passed ID.
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: |
+            A unique project identifier to remove.
+        - name: If-None-Match
+          in: header
+          type: string
+          description: |
+            Executes a request only if passed ETag doesn't equal to current
+            resource one (i.e. resource has been changed).
+      responses:
+        204:
+          description: No content. Project has remove successfully.
+          schema:
+            $ref: '#/definitions/Project'
+        404:
+          description: Project not found.
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Project:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: A unique evidence identifier.
+      repo:
+        type: string
+        description: A repository url which scan for vulnerabillities.
+      repo_auth:
+        type: string
+        format: base64
+        description: base64 string that represents a RepoAuth object
+      repo_auth_type:
+        type: string
+        format: binary
+        description: The type of authentication
+  Error:
+    type: object
+    properties:
+      code:
+        type: string
+        description: A uniqe identifier of error.
+      message:
+        type: string
+        description: A human readable error message.
+

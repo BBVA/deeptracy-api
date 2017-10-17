@@ -1,6 +1,4 @@
 -r requirements_test.txt
 bumpversion==0.5.3
-sphinx==1.6.3
-sphinxcontrib-spelling==2.3.0
 recommonmark==0.4.0
 ipython==5.4.1
