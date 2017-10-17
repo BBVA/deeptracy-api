@@ -11,7 +11,7 @@ Feature: Update projects
     And the api response payload is <response>
 
     Examples:
-      | payload                                                                   | response_code | response                                                                                                                           |
-      | {"hook_type":"SLACK"}                                                     | 201           | {"id": "ID", "repo": "http://test0000001.com", "scans": 0, "hookData": "", "hookType": "SLACK"}                                    |
-      | {"hook_type": "SLACK", "hook_data": {"webhook_url":"slack.com/0000001"}}  | 201           | {"id": "ID", "repo": "http://test0000001.com", "scans": 0, "hookData": {"webhook_url": "slack.com/0000001"}, "hookType": "SLACK"}  |
-      | {}                                                                        | 400           | {"error": {"msg": "invalid payload"}}                                                                                              |
+      | payload                                                                   | response_code | response                                                                                                                                                 |
+      | {"hook_type":"SLACK"}                                                     | 201           | {"id": "ID", "repo": "http://test0000001.com", "scans": 0, "hookData": "", "hookType": "SLACK", "authType": "PUBLIC"}                                    |
+      | {"hook_type": "SLACK", "hook_data": {"webhook_url":"slack.com/0000001"}}  | 201           | {"id": "ID", "repo": "http://test0000001.com", "scans": 0, "hookData": {"webhook_url": "slack.com/0000001"}, "hookType": "SLACK", "authType": "PUBLIC"}  |
+      | {}                                                                        | 400           | {"error": {"msg": "invalid payload"}}                                                                                                                    |

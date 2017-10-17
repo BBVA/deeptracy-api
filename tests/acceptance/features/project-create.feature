@@ -14,7 +14,7 @@ Feature: Create new projects
 
     Examples:
       | payload                      | response_code | response                                                                                  | created |
-      | {"repo":"http://google.com"} | 201           | {"id": "ID", "repo": "http://google.com", "scans": 0, "hookData": "", "hookType": "NONE"} | 1       |
+      | {"repo":"http://google.com"} | 201           | {"id": "ID", "authType": "PUBLIC", "repo": "http://google.com", "scans": 0, "hookData": "", "hookType": "NONE"} | 1       |
       | {"repo":""}                  | 400           | {"error": {"msg": "missing repo"}}                                                        | 0       |
       | {}                           | 400           | {"error": {"msg": "invalid payload"}}                                                     | 0       |
 
