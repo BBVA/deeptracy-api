@@ -53,13 +53,6 @@ def add_project():
 
     with db.session_scope() as session:
         try:
-            print('--------')
-            print('--------')
-            print('--------')
-            print(data)
-            print('--------')
-            print('--------')
-            print('--------')
             project = project_manager.add_project(repo, session, **data)
             session.commit()
         except Exception as exc:

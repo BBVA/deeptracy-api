@@ -23,6 +23,7 @@ from deeptracy_api.webhook.parse import handle_data
 logger = logging.getLogger(__name__)
 webhook = Blueprint("webhook", __name__)
 
+
 @webhook.route('/', methods=["POST"])
 def index():
     """Repositorie Triggers
@@ -34,19 +35,12 @@ def index():
     :return codes:  201 on success
                     400 on errors
     """
-    if request.method == 'POST':
+    # TODO: securize endpoint. This public endpoint should be securized
+    if request.json:
+        logger.debug("received request to process a webhook")
+        handle_data(request.headers, request.json)
+    else:
+        logger.debug("received unparseable webhook post")
+        return '', 400
 
-        if request.json:
-            # Most providers don't use JSON mime-types, but in case they do
-            # handle it.
-            logger.debug("Handling json")
-            handle_data(request.json)
-        elif 'payload' in request.form:
-            logger.debug("Decoding payload: %s" % request.form['payload'])
-            # BitBucket includes newlines in the message data; disable
-            # strict checking
-            json_data = json.loads(request.form['payload'], strict=False)
-            handle_data(json_data)
-        return "OK"
-    return "OK"
-
+    return '', 200

@@ -13,44 +13,72 @@
 # limitations under the License.
 
 import logging
+from celery import Celery
 
-from deeptracy_api.webhook.providers.bitbucket import parse_from_bitbucket
-from deeptracy_api.webhook.providers.github import parse_from_github
+from deeptracy_core.dal.project.manager import get_project_by_repo
+from deeptracy_core.dal.scan.manager import add_scan
+from deeptracy_core.dal.database import db
+from deeptracy_api.config import BROKER_URI
 
 logger = logging.getLogger(__name__)
 
 
-def parse_data(data):
+def parse_data(request_headers, data) -> str:
     """
-    Parse a JSON data payload from diferent repository providers.
+    Parse a JSON data payload from different repository providers.
+
+    It returns the project repo url.
+
+    :param request_headers: (dict) headers from the webhook
+    :param data: (dict) data from the webhook
+
+    :rtype: str
+    :raises ValueError: On invalid project_id or in not found Project
     """
-    if 'actor' in data \
-            and 'links' in data['actor'] \
-            and 'self' in data['actor']['links'] \
-            and 'href' in data['actor']['links']['self'] \
-            and 'bitbucket' in data['actor']['links']['self']['href']:
-        logger.debug("BitBucket")
-        parsed_data = parse_from_bitbucket(data)
-    elif 'repository' in data and 'url' in data['repository']:
-        logger.debug("GitHub")
-        parsed_data = parse_from_github(data)
+    if request_headers.get('X-Bitbucket-Type', None) is not None:
+        if request_headers.get('X-Event-Key') == 'repo:push':
+            # action for bitbucket repository push
+            # TODO: bitbucket has various api versions
+            # TODO: we are hardcoding the cloning repo template (with ssh)
+            # TODO: handle errors in data traversing
+            domain = data.get('repository').get('links').get('self')[0].get('href').split('/')[2]
+            repo_fullname = data.get('repository').get('fullName').lower()
+            repo = 'ssh://git@{domain}:7999/{repo_fullname}.git'.format(
+                domain=domain,
+                repo_fullname=repo_fullname
+            )
+            return repo
+        else:
+            return None
     else:
-        parsed_data = []
+        logger.debug('invalid hook received')
+        return None
 
-    return parsed_data
 
-def handle_data(response_data):
+def handle_data(request_headers, request_data):
     """
-    Automatically parse the JSON data received and dispatch the requests
-    to the appropriate handlers specified in settings.py.
+    Handle data incomming from webhook for PUSHES actions in project repositories
+
+    If a valid data can be parsed from the webhook requests and a project is found matching
+    the repo url extracted from the data, create a scan and send it to celery
+
+    :param request_headers:
+    :param request_data:
+    :return:
     """
-    data_list = parse_data(response_data)
-    logger.debug("raw data %s" % data_list)
+    repo = parse_data(request_headers, request_data)
 
-    for parsed_data in data_list:
-        provider_info = settings.PROVIDERS.get(parsed_data.provider, None)
+    if repo is not None:
+        logger.debug('repo from webhook {}'.format(repo))
+        with db.session_scope() as session:
+            project = get_project_by_repo(repo, session)
+            # TODO: Do not hardcode the language, extract it from the project default_language
+            # https://github.com/BBVA/deeptracy/issues/8
+            lang = 'nodejs'
+            scan = add_scan(project.id, lang, session)
+            session.commit()
 
-        if provider_info:
-            handler = provider_info.get('post_receive_handler', None)
-            if handler:
-                handler(parsed_data)
+            celery = Celery('deeptracy', broker=BROKER_URI)
+            celery.send_task("start_scan", [scan.id])
+    else:
+        logger.debug('webhook data cannot be parsed')

@@ -15,19 +15,10 @@
 """
 Module for deeptracy
 """
-import logging
-import sys
 
 from deeptracy_core.dal.database import db
 from deeptracy_api.celery import setup_celery
 from deeptracy_api.api.flask import setup_api
-
-logger = logging.getLogger(__name__)
-ch = logging.StreamHandler(sys.stdout)
-ch.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-logger.addHandler(ch)
 
 db.init_engine()  # Init database engine
 celery = setup_celery()  # setup the celery client
