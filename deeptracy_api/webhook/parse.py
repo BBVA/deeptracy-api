@@ -19,6 +19,7 @@ from deeptracy_core.dal.project.manager import get_project_by_repo
 from deeptracy_core.dal.scan.manager import add_scan
 from deeptracy_core.dal.database import db
 from deeptracy_api.config import BROKER_URI
+from deeptracy_api.api.exc.exceptions import APIError
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,17 @@ def parse_data(request_headers, data) -> str:
     else:
         logger.debug('invalid hook received')
         return None
+
+
+def handle_github_webhook(request_headers, request_data):
+    if request_headers.get('X-GitHub-Event') == 'push':
+        pass
+    else:
+        raise APIError('invalid event', status_code=400)
+
+
+def handle_bitbucket_webhook(request_headers, request_data):
+    pass
 
 
 def handle_data(request_headers, request_data):
