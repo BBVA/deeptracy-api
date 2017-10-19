@@ -57,6 +57,16 @@ coverage.xml
 *,cover
 .hypothesis/
 
+# dotenv
+.env*
+!.env.gen
+!.env.required
+
+# virtualenv
+.venv
+venv/
+ENV/
+
 # Sphinx documentation
 docs/_build/
 
