@@ -24,23 +24,14 @@ help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 .PHONY: clean
-clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
-
-.PHONY: clean-build
-clean-build: ## remove build artifacts
+clean: ## remove all build, test, coverage and Python artifacts
 	rm -rf build dist .eggs .cache
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
-
-.PHONY: clean-pyc
-clean-pyc: ## remove Python file artifacts
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
-
-.PHONY: clean-test
-clean-test: ## remove test and coverage artifacts
 	rm -rf .tox .coverage htmlcov coverage-reports
 
 .PHONY: test
@@ -69,17 +60,23 @@ docs: ## generate and shows documentation
 	@make -C docs html
 
 .PHONY: run
-run: ## local run the API
+run: ## launch the API
 	./run.sh
 
-.PHONY: behave_local
-behave_local: ## run behave tests in local environment
-	LOCAL_BEHAVE=True behave --no-capture --no-capture-stderr tests/acceptance/features
-
-.PHONY: behave_only
-behave_only: ## run behave tests in local environment
-	LOCAL_BEHAVE=True behave --no-capture --no-capture-stderr --tags=only tests/acceptance/features
-
-.PHONY: behave
-behave: ## run behave tests in docker environment
+.PHONY: at_local
+at_local: ## run acceptance tests without environemnt. You need to start your own environment (for dev)
 	behave --no-capture --no-capture-stderr tests/acceptance/features
+
+.PHONY: at_local_only
+at_local_only: ## run acceptance tests without environemnt, and just features marked as @only (for dev)
+	behave --no-capture --no-capture-stderr --tags=only tests/acceptance/features
+
+.PHONY: at
+at: ## run acceptance tests in complete docker environment
+	docker-compose -f tests/acceptance/docker-compose.yml stop
+	docker-compose -f tests/acceptance/docker-compose.yml rm -f
+	docker-compose -f tests/acceptance/docker-compose.yml up -d --build
+	sleep 10
+	behave --no-capture --no-capture-stderr tests/acceptance/features
+	docker-compose -f tests/acceptance/docker-compose.yml kill
+	docker-compose -f tests/acceptance/docker-compose.yml rm -f

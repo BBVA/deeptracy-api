@@ -2,9 +2,7 @@ version: '3'
 
 services:
   deeptracy-api:
-    build:
-      context: ../../
-      dockerfile: Dockerfile
+    build: ../../
     image: deeptracy-api
     depends_on:
       - redis
@@ -13,7 +11,7 @@ services:
       - 8080:8080
     environment:
       - BROKER_URI=redis://redis:6379
-      - DATABASE_URI=postgresql://postgres:postgres@postgres:5433/deeptracy_test
+      - DATABASE_URI=postgresql://postgres:postgres@postgres:5433/deeptracy
       - SERVER_ADDRESS=0.0.0.0:8080
       - GUNICORN_WORKERS=1
     command: ["./wait-for-it.sh", "postgres:5433", "--", "/opt/deeptracy/run.sh"]
