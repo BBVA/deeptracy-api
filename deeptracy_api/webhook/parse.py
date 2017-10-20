@@ -57,40 +57,91 @@ def parse_data(request_headers, data) -> str:
 
 
 def handle_github_webhook(request_headers, request_data):
+    """
+    Get headers and data received in a github webhook
+
+    Only process push events and raise an APIError in other events.
+    Examine X-GitHub-Event header and if a push event is received,
+    process it and extract the repo URL from it.
+
+    Once we have the repo url add scan for the received project if
+    a project with that repo exists
+
+    :param request_headers: (dict) All headers received in the request
+    :param request_data: (dict) Data received in the request
+    :raises: APIError
+    """
     if request_headers.get('X-GitHub-Event') == 'push':
-        pass
+        repository = request_data.get('repository', {})
+        repo_url = repository.get('url', None)
+
+        if repo_url is not None:
+            add_scan_for_project_with_repo(repo_url)
+        else:
+            raise APIError('invalid repo', status_code=400)
     else:
         raise APIError('invalid event', status_code=400)
 
 
 def handle_bitbucket_webhook(request_headers, request_data):
-    pass
-
-
-def handle_data(request_headers, request_data):
     """
-    Handle data incomming from webhook for PUSHES actions in project repositories
+    Get headers and data received in a Bitbucket webhook
 
-    If a valid data can be parsed from the webhook requests and a project is found matching
-    the repo url extracted from the data, create a scan and send it to celery
+    Only process push events and raise an APIError in other events.
+    Examine X-Event-Key header and if a push event is received,
+    process it and extract the repo URL from it.
 
-    :param request_headers:
-    :param request_data:
+    Once we have the repo url add scan for the received project if
+    a project with that repo exists
+
+    :param request_headers: (dict) All headers received in the request
+    :param request_data: (dict) Data received in the request
+    :raises: APIError
+    """
+    if request_headers.get('X-Event-Key') == 'repo:push':
+        # TODO: bitbucket has various api versions
+        # TODO: we are hardcoding the cloning repo template (with ssh)
+        repository = request_data.get('repository', {})
+        links = repository.get('links', {})
+        self = links.get('self', [{}])
+        href = self[0].get('href', None)
+        repo_fullname = repository.get('fullName', None)
+
+        if href is not None:
+            # href should be https://some.bitbucket-domain.com/project/repo
+            domain = href.split('/')[2]  # get domain (with subdomains)
+
+        if repo_fullname is not None:
+            repo_fullname = repo_fullname.lower()
+
+        if href and repo_fullname is not None:
+            repo_url = 'ssh://git@{domain}:7999/{repo_fullname}.git'.format(
+                domain=domain,
+                repo_fullname=repo_fullname
+            )
+            add_scan_for_project_with_repo(repo_url)
+        else:
+            raise APIError('invalid repo data', status_code=400)
+    else:
+        raise APIError('invalid event', status_code=400)
+
+
+def add_scan_for_project_with_repo(repo_url: str):
+    """
+    If a project with repo_url exists in the database, adds a scan to it
+
+    :param repo_url: (str) repo url for the project to launch the
     :return:
     """
-    repo = parse_data(request_headers, request_data)
+    assert type(repo_url) is str
 
-    if repo is not None:
-        logger.debug('repo from webhook {}'.format(repo))
-        with db.session_scope() as session:
-            project = get_project_by_repo(repo, session)
-            # TODO: Do not hardcode the language, extract it from the project default_language
-            # https://github.com/BBVA/deeptracy/issues/8
-            lang = 'nodejs'
-            scan = add_scan(project.id, lang, session)
-            session.commit()
+    with db.session_scope() as session:
+        project = get_project_by_repo(repo_url, session)
+        # TODO: Do not hardcode the language, extract it from the project default_language
+        # https://github.com/BBVA/deeptracy/issues/8
+        lang = 'nodejs'
+        scan = add_scan(project.id, lang, session)
+        session.commit()
 
-            celery = Celery('deeptracy', broker=BROKER_URI)
-            celery.send_task("start_scan", [scan.id])
-    else:
-        logger.debug('webhook data cannot be parsed')
+        celery = Celery('deeptracy', broker=BROKER_URI)
+        celery.send_task('start_scan', [scan.id])

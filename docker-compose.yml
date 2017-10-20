@@ -5,9 +5,10 @@ services:
   postgres:
     image: postgres:9.6-alpine
     ports:
-      - 5432:5432
+      - 5433:5433
     environment:
       - POSTGRES_PASSWORD=postgres
+    command: -p 5433
 
   redis:
     image: redis:3-alpine
