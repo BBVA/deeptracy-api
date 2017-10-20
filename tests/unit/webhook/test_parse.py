@@ -85,9 +85,3 @@ class WebhookParseTestCase(BaseDeeptracyTest):
 
         assert mock_add_scan_for_project_with_repo.called
         mock_add_scan_for_project_with_repo.assert_called_with(repo_url)
-
-    @mock.patch('deeptracy_api.webhook.parse.db.session_scope')
-    def test_add_scan_for_project_with_repo(self, mock_session_scope):
-        print('----')
-        add_scan_for_project_with_repo('test')
-        assert True is False
