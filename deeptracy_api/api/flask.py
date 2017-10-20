@@ -12,13 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask import Flask, json
+import logging
+import traceback
+
+from flask import Flask, json, request
 from flask_cors import CORS
+from time import strftime
 
 from deeptracy_api.api.project_blueprint import project
 from deeptracy_api.api.scan_blueprint import scan
 from deeptracy_api.api.webhook_blueprint import webhook
 from deeptracy_api.api.exc import APIError
+
+logger = logging.getLogger(__name__)
 
 
 def setup_api():
@@ -35,6 +41,36 @@ def setup_api():
         """
         response = json.jsonify(error.to_dict())
         response.status_code = error.status_code
+        return response
+
+    @flask_app.after_request
+    def after_request(response):
+        # This IF avoids the duplication of registry in the log,
+        # since that 500 is already logged via @app.errorhandler.
+        if response.status_code != 500:
+            ts = strftime('[%Y-%b-%d %H:%M]')
+            logger.error('%s %s %s %s %s %s',
+                         ts,
+                         request.remote_addr,
+                         request.method,
+                         request.scheme,
+                         request.full_path,
+                         response.status)
+        return response
+
+    @flask_app.errorhandler(Exception)
+    def exceptions(e):
+        ts = strftime('[%Y-%b-%d %H:%M]')
+        tb = traceback.format_exc()
+        logger.error('%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s',
+                     ts,
+                     request.remote_addr,
+                     request.method,
+                     request.scheme,
+                     request.full_path,
+                     tb)
+
+        response = json.jsonify({'error': 'unexpected', 'status_code': 500})
         return response
 
     return flask_app
