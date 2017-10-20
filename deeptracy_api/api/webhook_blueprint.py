@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 webhook = Blueprint('webhook', __name__)
 
 
-@webhook.route('/', methods=['POST'])
+@webhook.route('/', methods=["POST", "PUT"])
 def receive_hook():
     """Receive a webhook and handle it
 

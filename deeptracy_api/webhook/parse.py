@@ -136,7 +136,9 @@ def add_scan_for_project_with_repo(repo_url: str):
     assert type(repo_url) is str
 
     with db.session_scope() as session:
+
         project = get_project_by_repo(repo_url, session)
+
         # TODO: Do not hardcode the language, extract it from the project default_language
         # https://github.com/BBVA/deeptracy/issues/8
         lang = 'nodejs'
