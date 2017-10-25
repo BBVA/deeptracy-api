@@ -13,12 +13,11 @@
 # limitations under the License.
 
 from flask import url_for
-from unittest import mock
-from tests.unit.base_test import BaseDeeptracyTest
+from unittest import mock, TestCase
 from deeptracy_api.api.flask import setup_api
 
 
-class WebhookBlueprintTestCase(BaseDeeptracyTest):
+class WebhookBlueprintTestCase(TestCase):
     def setUp(self):
         app = setup_api()
         app.config['SERVER_NAME'] = 'localhost'

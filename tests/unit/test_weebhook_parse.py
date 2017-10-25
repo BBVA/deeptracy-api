@@ -14,13 +14,12 @@
 
 import json
 import pytest
-from unittest import mock
-from tests.unit.base_test import BaseDeeptracyTest
+from unittest import mock, TestCase
 from deeptracy_api.webhook.parse import handle_github_webhook, handle_bitbucket_webhook, add_scan_for_project_with_repo
 from deeptracy_api.api.exc.exceptions import APIError
 
 
-class WebhookParseTestCase(BaseDeeptracyTest):
+class WebhookParseTestCase(TestCase):
 
     def test_handle_github_webhook_invalid_event(self):
         """When an invalid event is received, the method raises an APIError"""
@@ -33,7 +32,7 @@ class WebhookParseTestCase(BaseDeeptracyTest):
 
     @mock.patch('deeptracy_api.webhook.parse.add_scan_for_project_with_repo')
     def test_handle_github_webhook_push_event_invalid_repo_url(self, mock_add_scan_for_project_with_repo):
-        with open('tests/unit/github_push_webhook_payload.json') as github_webhook_payload_push_json:
+        with open('tests/unit/resources/github_push_webhook_payload.json') as github_webhook_payload_push_json:
             github_webhook_payload_push_data = json.load(github_webhook_payload_push_json)
 
         # remove the url from the json
@@ -48,7 +47,7 @@ class WebhookParseTestCase(BaseDeeptracyTest):
 
     @mock.patch('deeptracy_api.webhook.parse.add_scan_for_project_with_repo')
     def test_handle_github_webhook_push_event(self, mock_add_scan_for_project_with_repo):
-        with open('tests/unit/github_push_webhook_payload.json') as github_webhook_payload_push_json:
+        with open('tests/unit/resources/github_push_webhook_payload.json') as github_webhook_payload_push_json:
             github_webhook_payload_push_data = json.load(github_webhook_payload_push_json)
 
         repo_url = 'repo_url'
@@ -71,7 +70,7 @@ class WebhookParseTestCase(BaseDeeptracyTest):
 
     @mock.patch('deeptracy_api.webhook.parse.add_scan_for_project_with_repo')
     def test_handle_github_webhook_push_event(self, mock_add_scan_for_project_with_repo):
-        with open('tests/unit/bitbucket_push_webhook_payload.json') as bitbucket_webhook_payload_push_json:
+        with open('tests/unit/resources/bitbucket_push_webhook_payload.json') as bitbucket_webhook_payload_push_json:
             bitbucket_webhook_payload_push_data = json.load(bitbucket_webhook_payload_push_json)
 
         repo_url = 'https://some.bitbucket-domain.com/project/repo'
