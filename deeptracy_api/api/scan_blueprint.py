@@ -48,9 +48,9 @@ def post_scan():
             return api_error_response('invalid payload'), 400
 
         project_id = get_required_field(data, 'project_id')
-        lang = get_required_field(data, 'lang')
+        lang = data.get('lang', None)
 
-        scan = add_scan(project_id, lang, session)
+        scan = add_scan(project_id, session, lang=lang)
         session.commit()
 
         # when the scan is added to the database, a celery task is inserted for that scan to start the process

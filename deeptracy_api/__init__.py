@@ -14,7 +14,7 @@
 
 import logging
 
-__version__ = '0.0.5'
+__version__ = '0.0.6'
 
 root_log = logging.getLogger()
 root_log.setLevel(logging.DEBUG)

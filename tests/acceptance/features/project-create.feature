@@ -3,7 +3,7 @@ Feature: Create new projects
   The API should be able to create new projects
 
   Background: Database setup
-    Given an empty project table in database
+    Given an empty system
 
   @only
   Scenario Outline: Add a new project

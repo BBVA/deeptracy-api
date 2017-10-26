@@ -13,9 +13,11 @@
 # limitations under the License.
 
 from sqlalchemy import text
+from behave import given
 
 
-def clean_db(context):
+@given(u'an empty system')
+def step_impl(context):
     sql = text('DELETE FROM scan')
     context.engine.execute(sql)
 

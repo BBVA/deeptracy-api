@@ -14,15 +14,12 @@
 
 from sqlalchemy import text
 from behave import given, then
-from tests.acceptance.utils import clean_db
 
 
 @given(u'a database ready to receive scans')
 def step_impl(context):
     project_id = '123'
     plugin_lang = 'lang'
-
-    clean_db(context)
 
     sql = text('INSERT INTO project (id, repo) VALUES (:id, :repo)')
     context.engine.execute(sql, id=project_id, repo='http://test.com')

@@ -3,7 +3,7 @@ Feature: Delete projects
   The API should be able to delete existing projects
 
   Background: Database setup
-    Given an empty project table in database
+    Given an empty system
 
   Scenario: Delete project by id
     When a project with id "0000001" exists in the database

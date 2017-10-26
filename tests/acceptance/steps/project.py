@@ -15,13 +15,6 @@
 from sqlalchemy import text
 from behave import given, then, when
 
-from tests.acceptance.utils import clean_db
-
-
-@given(u'an empty project table in database')
-def step_impl(context):
-    clean_db(context)
-
 
 @then(u'{created} projects are in the database')
 def step_impl(context, created):
