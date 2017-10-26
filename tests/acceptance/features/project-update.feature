@@ -2,7 +2,7 @@ Feature: Update projects
   The API should be able to update existing projects
 
   Background: Database setup
-    Given an empty project table in database
+    Given an empty system
 
   Scenario Outline: Updates an existing project
     When a project with id "0000001" exists in the database

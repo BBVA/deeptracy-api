@@ -22,8 +22,6 @@ def step_impl(context):
     project_id = '123'
     plugin_lang = 'lang'
 
-    clean_db(context)
-
     sql = text('INSERT INTO project (id, repo) VALUES (:id, :repo)')
     context.engine.execute(sql, id=project_id, repo='http://test.com')
 

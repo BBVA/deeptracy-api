@@ -3,7 +3,7 @@ Feature: Read projects
   The API should be able to read existing projects
 
   Background: Database setup
-    Given an empty project table in database
+    Given an empty system
 
 
   Scenario Outline: Get a project by id
