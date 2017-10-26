@@ -139,10 +139,7 @@ def add_scan_for_project_with_repo(repo_url: str):
 
         project = get_project_by_repo(repo_url, session)
 
-        # TODO: Do not hardcode the language, extract it from the project default_language
-        # https://github.com/BBVA/deeptracy/issues/8
-        lang = 'nodejs'
-        scan = add_scan(project.id, lang, session)
+        scan = add_scan(project.id, session)
         session.commit()
 
         celery = Celery('deeptracy', broker=BROKER_URI)
