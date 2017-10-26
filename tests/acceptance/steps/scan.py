@@ -14,7 +14,6 @@
 
 from sqlalchemy import text
 from behave import given, then
-from tests.acceptance.utils import clean_db
 
 
 @given(u'a database ready to receive scans')
