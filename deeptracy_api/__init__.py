@@ -14,8 +14,13 @@
 
 import logging
 
+from .config import LOG_LEVEL
+
 __version__ = '0.0.6'
 
-root_log = logging.getLogger()
-root_log.setLevel(logging.DEBUG)
-root_log.addHandler(logging.StreamHandler())
+logger = logging.getLogger('deeptracy')
+handler = logging.StreamHandler()
+formatter = logging.Formatter('[%(asctime)s %(name)-12s %(levelname)-8s] %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(LOG_LEVEL)

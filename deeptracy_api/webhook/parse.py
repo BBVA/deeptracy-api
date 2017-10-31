@@ -18,10 +18,11 @@ from celery import Celery
 from deeptracy_core.dal.project.manager import get_project_by_repo
 from deeptracy_core.dal.scan.manager import add_scan
 from deeptracy_core.dal.database import db
-from deeptracy_api.config import BROKER_URI
-from deeptracy_api.api.exc.exceptions import APIError
 
-logger = logging.getLogger(__name__)
+from ..config import BROKER_URI
+from ..api.exc.exceptions import APIError
+
+logger = logging.getLogger('deeptracy')
 
 
 def parse_data(request_headers, data) -> str:

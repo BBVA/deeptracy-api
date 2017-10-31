@@ -17,14 +17,13 @@ import traceback
 
 from flask import Flask, json, request
 from flask_cors import CORS
-from time import strftime
 
-from deeptracy_api.api.project_blueprint import project
-from deeptracy_api.api.scan_blueprint import scan
-from deeptracy_api.api.webhook_blueprint import webhook
-from deeptracy_api.api.exc import APIError
+from .project_blueprint import project
+from .scan_blueprint import scan
+from .webhook_blueprint import webhook
+from .exc import APIError
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('deeptracy')
 
 
 def setup_api():
@@ -46,11 +45,9 @@ def setup_api():
     @flask_app.after_request
     def after_request(response):
         # This IF avoids the duplication of registry in the log,
-        # since that 500 is already logged via @app.errorhandler.
+        # since that 500 is already logged via @flask_app.errorhandler.
         if response.status_code != 500:
-            ts = strftime('[%Y-%b-%d %H:%M]')
-            logger.error('%s %s %s %s %s %s',
-                         ts,
+            logger.info('%s %s %s %s %s',
                          request.remote_addr,
                          request.method,
                          request.scheme,
@@ -60,10 +57,8 @@ def setup_api():
 
     @flask_app.errorhandler(Exception)
     def exceptions(e):
-        ts = strftime('[%Y-%b-%d %H:%M]')
         tb = traceback.format_exc()
-        logger.error('%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s',
-                     ts,
+        logger.error('%s %s %s %s 5xx INTERNAL SERVER ERROR\n%s',
                      request.remote_addr,
                      request.method,
                      request.scheme,

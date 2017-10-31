@@ -14,7 +14,8 @@
 
 """Utils to be used in the API"""
 from flask import jsonify
-from deeptracy_api.api.exc import APIError
+
+from ..api.exc import APIError
 
 
 def api_error_response(msg: str):

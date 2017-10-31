@@ -18,9 +18,10 @@ import logging
 
 from flask import Blueprint, request
 
-from deeptracy_api.webhook.parse import handle_github_webhook, handle_bitbucket_webhook
+from ..webhook.parse import handle_github_webhook, handle_bitbucket_webhook
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('deeptracy')
+
 webhook = Blueprint('webhook', __name__)
 
 

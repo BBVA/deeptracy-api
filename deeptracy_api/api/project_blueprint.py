@@ -16,12 +16,12 @@
 
 from flask import Blueprint, request
 from flask import jsonify
+
 from deeptracy_core.dal.project.model import Project
 import deeptracy_core.dal.project.manager as project_manager
 from deeptracy_core.dal.database import db
 
-from deeptracy_api.api.utils import api_error_response
-
+from .utils import api_error_response
 
 project = Blueprint("project", __name__)
 

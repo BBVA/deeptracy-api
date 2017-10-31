@@ -19,9 +19,8 @@ from flask import jsonify
 from deeptracy_core.dal.scan.manager import add_scan
 from deeptracy_core.dal.database import db
 
-from deeptracy_api.config import BROKER_URI
-from deeptracy_api.api.utils import api_error_response, get_required_field
-
+from ..config import BROKER_URI
+from .utils import api_error_response, get_required_field
 
 scan = Blueprint("scan", __name__)
 
