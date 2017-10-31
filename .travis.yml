@@ -15,6 +15,7 @@ env:
     - DATABASE_URI=postgresql://postgres:postgres@127.0.0.1:5433/deeptracy
     - SERVER_ADDRESS=localhost:8080
     - GUNICORN_WORKERS=1
+    - LOG_LEVEL=INFO
 
 script:
   - tox
