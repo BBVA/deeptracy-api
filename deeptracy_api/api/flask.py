@@ -48,11 +48,11 @@ def setup_api():
         # since that 500 is already logged via @flask_app.errorhandler.
         if response.status_code != 500:
             logger.info('%s %s %s %s %s',
-                         request.remote_addr,
-                         request.method,
-                         request.scheme,
-                         request.full_path,
-                         response.status)
+                        request.remote_addr,
+                        request.method,
+                        request.scheme,
+                        request.full_path,
+                        response.status)
         return response
 
     @flask_app.errorhandler(Exception)
