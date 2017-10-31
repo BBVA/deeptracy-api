@@ -14,6 +14,7 @@ services:
       - DATABASE_URI=postgresql://postgres:postgres@postgres:5433/deeptracy
       - SERVER_ADDRESS=0.0.0.0:8080
       - GUNICORN_WORKERS=1
+      - LOG_LEVEL=INFO
     command: ["./wait-for-it.sh", "postgres:5433", "--", "/opt/deeptracy/run.sh"]
 
   postgres:
