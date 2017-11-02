@@ -11,7 +11,7 @@ Feature: Create new scans
     Then the api response code is <response_code>
     And the api response payload is <response>
     And <created> scans are in the database
-    And <created> celery tasks of type start_scan are in the broker
+    And <created> celery tasks of type prepare_scan are in the broker
 
     Examples:
       | payload                              | response_code | response                                                                                                                | created |
