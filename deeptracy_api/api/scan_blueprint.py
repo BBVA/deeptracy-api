@@ -54,6 +54,6 @@ def post_scan():
 
         # when the scan is added to the database, a celery task is inserted for that scan to start the process
         celery = Celery('deeptracy', broker=BROKER_URI)
-        celery.send_task("start_scan", [scan.id])
+        celery.send_task('prepare_scan', [scan.id])
 
         return jsonify(scan.to_dict()), 201
