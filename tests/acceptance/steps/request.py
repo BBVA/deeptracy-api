@@ -55,9 +55,12 @@ def step_impl(context, response):
     # remove the id from response and expected result
     if isinstance(json_data, list):
         [data.pop('id', None) for data in json_data]
+        [data.pop('created', None) for data in json_data]
     else:
         json_data.pop('id', None)
+        json_data.pop('created', None)
         json_expected.pop('id', None)
+        json_expected.pop('created', None)
 
     # print('------')
     # print('------')

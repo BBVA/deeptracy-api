@@ -17,7 +17,7 @@ import json
 from behave import then
 
 
-@then(u'{created} celery tasks of type start_scan are in the broker')
+@then(u'{created} celery tasks of type prepare_scan are in the broker')
 def step_impl(context, created):
     created = int(created)
 
@@ -32,4 +32,4 @@ def step_impl(context, created):
         headers = item.get('headers')
 
         # asserts the correct task is in the list
-        assert headers.get('task') == 'start_scan'
+        assert headers.get('task') == 'prepare_scan'
