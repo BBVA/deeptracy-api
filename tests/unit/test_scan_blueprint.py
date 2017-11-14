@@ -67,6 +67,7 @@ class ScanBlueprintTestCase(TestCase):
     @mock.patch('deeptracy_api.api.scan_blueprint.Celery')
     @mock.patch('deeptracy_api.api.scan_blueprint.add_scan')
     def test_post_scan(self, mock_add_scan, mock_celery, mock_session):
+        scan_blueprint.ALLOWED_SCANS_PER_PERIOD = 0
         url = url_for('scan.post_scan')
 
         mock_add_scan.return_value = Scan(id='123')
