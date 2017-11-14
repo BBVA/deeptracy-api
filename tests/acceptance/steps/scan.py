@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
+from datetime import datetime, timedelta
 from sqlalchemy import text
 from behave import given, then
 
@@ -37,3 +39,11 @@ def step_impl(context, created):
     results = context.engine.execute(sql).fetchall()
 
     assert len(results) == int(created)
+
+
+@given(u'a scan created {minutes} mins ago exists in the database for a project')
+def step_impl(context, minutes):
+    scan_id = uuid.uuid4().hex
+    created = datetime.now() - timedelta(minutes=int(minutes))
+    sql = text('INSERT INTO scan (id, project_id, created) VALUES (:id, :project_id, :created)')
+    context.engine.execute(sql, id=scan_id, project_id=context.project_id, created=created)

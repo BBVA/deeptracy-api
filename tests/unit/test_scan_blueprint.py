@@ -18,8 +18,11 @@ from flask import url_for
 from flask.testing import FlaskClient
 
 from unittest import mock, TestCase
-from deeptracy_api.api.flask import setup_api
 from deeptracy_core.dal.scan.model import Scan
+
+from deeptracy_api.api.flask import setup_api
+import deeptracy_api.api.scan_blueprint as scan_blueprint
+
 from . import utils
 
 
@@ -84,3 +87,18 @@ class ScanBlueprintTestCase(TestCase):
             res = self.client.post(url, json={'project_id': '12', 'lang': 'nodejs'})
             self.assertEqual(res.status_code, 201)
             mock_add_scan.assert_called_once_with('12', mock.ANY, lang='nodejs')
+
+    @mock.patch('deeptracy_api.api.scan_blueprint.Celery')
+    @mock.patch('deeptracy_api.api.scan_blueprint.get_num_scans_in_last_minutes')
+    def test_post_scan_with_limited_allowed_per_period(self, mock_num_scans, mock_celery, mock_session):
+        scan_blueprint.ALLOWED_SCANS_PER_PERIOD = 1
+        scan_blueprint.ALLOWED_SCANS_CHECK_PERIOD = 40
+
+        url = url_for('scan.post_scan')
+
+        mock_num_scans.return_value = 2
+
+        with self.app.test_request_context(url):
+            res = self.client.post(url, json={'project_id': '12', 'lang': 'nodejs'})
+            self.assertEqual(res.status_code, 403)
+            mock_num_scans.assert_called_once_with('12', 40, mock.ANY)
