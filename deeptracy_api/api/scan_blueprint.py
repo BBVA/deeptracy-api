@@ -13,16 +13,20 @@
 # limitations under the License.
 
 """Blueprint for scan endpoints"""
+import logging
+
 from celery import Celery
 from flask import Blueprint, request
 from flask import jsonify
-from deeptracy_core.dal.scan.manager import add_scan
+from deeptracy_core.dal.scan.manager import add_scan, get_num_scans_in_last_minutes
 from deeptracy_core.dal.database import db
 
-from ..config import BROKER_URI
+from ..config import BROKER_URI, ALLOWED_SCANS_PER_PERIOD, ALLOWED_SCANS_CHECK_PERIOD
 from .utils import api_error_response, get_required_field
 
 scan = Blueprint("scan", __name__)
+
+logger = logging.getLogger('deeptracy')
 
 
 @scan.route("/", methods=["POST"])
@@ -49,11 +53,21 @@ def post_scan():
         project_id = get_required_field(data, 'project_id')
         lang = data.get('lang', None)
 
-        scan = add_scan(project_id, session, lang=lang)
-        session.commit()
+        # if defined, limit the number of scans that can be created by a given period for the same project
+        logger.debug(' allowed scans per period {}/{}'.format(ALLOWED_SCANS_PER_PERIOD, ALLOWED_SCANS_CHECK_PERIOD))
+        allowed_scan = True
+        if ALLOWED_SCANS_PER_PERIOD > 0:
+            previous_scans = get_num_scans_in_last_minutes(project_id, ALLOWED_SCANS_CHECK_PERIOD, session)
+            allowed_scan = previous_scans < ALLOWED_SCANS_PER_PERIOD
 
-        # when the scan is added to the database, a celery task is inserted for that scan to start the process
-        celery = Celery('deeptracy', broker=BROKER_URI)
-        celery.send_task('prepare_scan', [scan.id])
+        if allowed_scan:
+            scan = add_scan(project_id, session, lang=lang)
+            session.commit()
 
-        return jsonify(scan.to_dict()), 201
+            # when the scan is added to the database, a celery task is inserted for that scan to start the process
+            celery = Celery('deeptracy', broker=BROKER_URI)
+            celery.send_task('prepare_scan', [scan.id])
+
+            return jsonify(scan.to_dict()), 201
+        else:
+            return api_error_response('cant create more scans'), 403
