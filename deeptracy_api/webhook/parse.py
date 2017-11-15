@@ -16,10 +16,10 @@ import logging
 from celery import Celery
 
 from deeptracy_core.dal.project.manager import get_project_by_repo
-from deeptracy_core.dal.scan.manager import add_scan
+from deeptracy_core.dal.scan.manager import add_scan, get_num_scans_in_last_minutes
 from deeptracy_core.dal.database import db
 
-from ..config import BROKER_URI
+from ..config import BROKER_URI, ALLOWED_SCANS_PER_PERIOD, ALLOWED_SCANS_CHECK_PERIOD
 from ..api.exc.exceptions import APIError
 
 logger = logging.getLogger('deeptracy')
@@ -140,8 +140,16 @@ def add_scan_for_project_with_repo(repo_url: str):
 
         project = get_project_by_repo(repo_url, session)
 
-        scan = add_scan(project.id, session)
-        session.commit()
+        allowed_scan = True
+        if ALLOWED_SCANS_PER_PERIOD > 0:
+            previous_scans = get_num_scans_in_last_minutes(project.id, ALLOWED_SCANS_CHECK_PERIOD, session)
+            allowed_scan = previous_scans < ALLOWED_SCANS_PER_PERIOD
 
-        celery = Celery('deeptracy', broker=BROKER_URI)
-        celery.send_task('start_scan', [scan.id])
+        if allowed_scan:
+            scan = add_scan(project.id, session)
+            session.commit()
+
+            celery = Celery('deeptracy', broker=BROKER_URI)
+            celery.send_task('start_scan', [scan.id])
+        else:
+            raise APIError('cant create more scans', status_code=503)

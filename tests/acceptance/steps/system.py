@@ -28,3 +28,9 @@ def step_impl(context):
     context.engine.execute(sql)
 
     context.redis_db.delete('celery')
+
+
+@given(u'the {key_config} config is set to {value}')
+def step_impl(context, key_config, value):
+    # TODO: this configs sould be updted in the database
+    pass

@@ -16,7 +16,7 @@ import logging
 
 from .config import LOG_LEVEL
 
-__version__ = '0.0.7'
+__version__ = '0.0.8'
 
 logger = logging.getLogger('deeptracy')
 handler = logging.StreamHandler()
