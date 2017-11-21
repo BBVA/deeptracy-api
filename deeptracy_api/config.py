@@ -18,5 +18,5 @@ import os
 BROKER_URI = os.environ.get('BROKER_URI')
 DATABASE_URI = os.environ.get('DATABASE_URI')
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
-ALLOWED_SCANS_PER_PERIOD = os.environ.get('ALLOWED_SCANS_PER_PERIOD', 1)
-ALLOWED_SCANS_CHECK_PERIOD = os.environ.get('ALLOWED_SCANS_CHECK_PERIOD', 5)  # in minutes
+ALLOWED_SCANS_PER_PERIOD = int(os.environ.get('ALLOWED_SCANS_PER_PERIOD', 1))
+ALLOWED_SCANS_CHECK_PERIOD = int(os.environ.get('ALLOWED_SCANS_CHECK_PERIOD', 5))  # in minutes
