@@ -27,12 +27,12 @@ import deeptracy_api.api.scan_blueprint as scan_blueprint
 from . import utils
 
 
-class TestClient(FlaskClient):
+class MockClient(FlaskClient):
     def open(self, *args, **kwargs):
         if 'json' in kwargs:
             kwargs['data'] = json.dumps(kwargs.pop('json'))
             kwargs['content_type'] = 'application/json'
-        return super(TestClient, self).open(*args, **kwargs)
+        return super(MockClient, self).open(*args, **kwargs)
 
 
 @mock.patch('deeptracy_api.api.scan_blueprint.db.session_scope')
@@ -40,7 +40,7 @@ class ScanBlueprintTestCase(TestCase):
     def setUp(self):
         app = setup_api()
         app.config['SERVER_NAME'] = 'localhost'
-        app.test_client_class = TestClient
+        app.test_client_class = MockClient
         app.testing = True
         ctx = app.app_context()
         ctx.push()
