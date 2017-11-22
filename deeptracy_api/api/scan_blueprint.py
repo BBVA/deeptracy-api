@@ -73,8 +73,8 @@ def post_scan():
             return api_error_response('cant create more scans'), 403
 
 
-@scan.route("/<string:scan_id>", methods=["GET"])
-def get_scan_vulnerabilities(scan_id):
+@scan.route("/<string:scan_id>/vulnerabilities", methods=["GET"])
+def get_vulnerabilities(scan_id):
     """Get scan vulnerabilities"""
     with db.session_scope() as session:
         try:

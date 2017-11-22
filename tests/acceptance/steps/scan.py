@@ -15,7 +15,7 @@
 import uuid
 from datetime import datetime, timedelta
 from sqlalchemy import text
-from behave import given, then
+from behave import given, then, when
 
 
 @given(u'a database ready to receive scans')
@@ -47,3 +47,11 @@ def step_impl(context, minutes):
     created = datetime.now() - timedelta(minutes=int(minutes))
     sql = text('INSERT INTO scan (id, project_id, created) VALUES (:id, :project_id, :created)')
     context.engine.execute(sql, id=scan_id, project_id=context.project_id, created=created)
+
+
+@when(u'a scan with id "{scan_id}" exists in the database')
+def step_impl(context, scan_id):
+    sql = text('SELECT * FROM scan WHERE scan.id = \'{}\''.format(scan_id))
+    results = context.engine.execute(sql).fetchall()
+
+    assert len(results) == 0
