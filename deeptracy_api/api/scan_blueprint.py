@@ -45,7 +45,7 @@ def post_scan():
     :return codes:  201 on success
                     400 on errors
     """
-    with db.session_scope() as session:et_scan_vulnerabilities'
+    with db.session_scope() as session:
         data = request.get_json()
         if not data:
             return api_error_response('invalid payload'), 400
