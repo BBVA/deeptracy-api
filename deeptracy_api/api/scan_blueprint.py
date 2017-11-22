@@ -18,7 +18,7 @@ import logging
 from celery import Celery
 from flask import Blueprint, request
 from flask import jsonify
-from deeptracy_core.dal.scan.manager import add_scan, get_num_scans_in_last_minutes
+from deeptracy_core.dal.scan.manager import add_scan, get_num_scans_in_last_minutes, get_scan_vulnerabilities
 from deeptracy_core.dal.database import db
 
 from ..config import BROKER_URI, ALLOWED_SCANS_PER_PERIOD, ALLOWED_SCANS_CHECK_PERIOD
@@ -45,7 +45,7 @@ def post_scan():
     :return codes:  201 on success
                     400 on errors
     """
-    with db.session_scope() as session:
+    with db.session_scope() as session:et_scan_vulnerabilities'
         data = request.get_json()
         if not data:
             return api_error_response('invalid payload'), 400
@@ -71,3 +71,15 @@ def post_scan():
             return jsonify(scan.to_dict()), 201
         else:
             return api_error_response('cant create more scans'), 403
+
+
+@scan.route("/<string:scan_id>", methods=["GET"])
+def get_scan_vulnerabilities(scan_id):
+    """Get scan vulnerabilities"""
+    with db.session_scope() as session:
+        try:
+            scan_vulnerabilities = get_scan_vulnerabilities(scan_id, session)
+        except Exception as exc:
+            return api_error_response(exc.args[0]), 404
+
+        return jsonify(scan_vulnerabilities)
