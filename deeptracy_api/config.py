@@ -13,10 +13,38 @@
 # limitations under the License.
 
 import os
+import logging
 
+from enum import Enum
 
 BROKER_URI = os.environ.get('BROKER_URI')
 DATABASE_URI = os.environ.get('DATABASE_URI')
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
-ALLOWED_SCANS_PER_PERIOD = int(os.environ.get('ALLOWED_SCANS_PER_PERIOD', 1))
-ALLOWED_SCANS_CHECK_PERIOD = int(os.environ.get('ALLOWED_SCANS_CHECK_PERIOD', 5))  # in minutes
+
+logger = logging.getLogger('deeptracy')
+
+
+# config keys saved in database
+class DbConfig(Enum):
+    ALLOWED_SCANS_PER_PERIOD = 1
+    ALLOWED_SCANS_CHECK_PERIOD = 5
+
+
+def save_configs_to_database():
+    """Some config properties should be saved in the database.
+
+    If the config options are not saved in the database, save them
+    """
+    from deeptracy_core.dal.config.manager import get_config, save_config
+    from deeptracy_core.dal.database import db
+
+    for config in DbConfig:
+        env_value = int(os.environ.get(config.name, config.value))
+        with db.session_scope() as session:
+            saved_value = get_config(config.name, session)
+            if not saved_value:
+                # adding a try avoid exceptions when multiple workers try to save the same key at the same time
+                try:
+                    save_config(config.name, env_value, session)
+                except Exception:  # noqa
+                    logger.debug('config key {} already exists'.format(config.name))
