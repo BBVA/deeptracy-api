@@ -32,5 +32,5 @@ def step_impl(context):
 
 @given(u'the {key_config} config is set to {value}')
 def step_impl(context, key_config, value):
-    # TODO: this configs sould be updted in the database
-    pass
+    sql = text('UPDATE config SET value = :value WHERE id = :key')
+    context.engine.execute(sql, value=value, key=key_config)
