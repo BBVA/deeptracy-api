@@ -18,7 +18,7 @@ import logging
 from celery import Celery
 from flask import Blueprint, request
 from flask import jsonify
-from deeptracy_core.dal.scan.manager import add_scan, get_num_scans_in_last_minutes, get_scan_vulnerabilities
+from deeptracy_core.dal.scan.manager import add_scan, get_num_scans_in_last_minutes, get_scan, get_scan_vulnerabilities
 from deeptracy_core.dal.database import db
 
 from ..config import BROKER_URI, ALLOWED_SCANS_PER_PERIOD, ALLOWED_SCANS_CHECK_PERIOD
@@ -78,7 +78,7 @@ def get_vulnerabilities(scan_id):
     """Get scan vulnerabilities"""
     with db.session_scope() as session:
         try:
-            scan_vulnerabilities = get_scan_vulnerabilities(scan_id, session)
+            scan_vulnerabilities = [scan_vulnerability.to_dict() for scan_vulnerability in get_scan_vulnerabilities(scan_id, session)]
         except Exception as exc:
             return api_error_response(exc.args[0]), 404
 
