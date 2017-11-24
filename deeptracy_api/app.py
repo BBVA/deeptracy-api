@@ -18,10 +18,12 @@ Module for deeptracy
 
 from deeptracy_core.dal.database import db
 
+from .config import save_configs_to_database
 from .celery import setup_celery
 from .api.flask import setup_api
 
 db.init_engine()  # Init database engine
 celery = setup_celery()  # setup the celery client
+save_configs_to_database()  # save configs from env to database
 
 flask_app = setup_api()  # setup flask api
