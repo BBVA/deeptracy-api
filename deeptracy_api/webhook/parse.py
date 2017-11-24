@@ -16,10 +16,11 @@ import logging
 from celery import Celery
 
 from deeptracy_core.dal.project.manager import get_project_by_repo
-from deeptracy_core.dal.scan.manager import add_scan, get_num_scans_in_last_minutes
+from deeptracy_core.dal.scan.manager import add_scan, can_create_scan
+from deeptracy_core.dal.config.manager import get_config
 from deeptracy_core.dal.database import db
 
-from ..config import BROKER_URI, ALLOWED_SCANS_PER_PERIOD, ALLOWED_SCANS_CHECK_PERIOD
+from ..config import BROKER_URI, DbConfig
 from ..api.exc.exceptions import APIError
 
 logger = logging.getLogger('deeptracy')
@@ -140,12 +141,10 @@ def add_scan_for_project_with_repo(repo_url: str):
 
         project = get_project_by_repo(repo_url, session)
 
-        allowed_scan = True
-        if ALLOWED_SCANS_PER_PERIOD > 0:
-            previous_scans = get_num_scans_in_last_minutes(project.id, ALLOWED_SCANS_CHECK_PERIOD, session)
-            allowed_scan = previous_scans < ALLOWED_SCANS_PER_PERIOD
+        allowed_scans_per_perdiod = get_config(DbConfig.ALLOWED_SCANS_PER_PERIOD.name, session)
+        allowed_scans_check_period = get_config(DbConfig.ALLOWED_SCANS_CHECK_PERIOD.name, session)
 
-        if allowed_scan:
+        if can_create_scan(project.id, int(allowed_scans_per_perdiod), int(allowed_scans_check_period), session):
             scan = add_scan(project.id, session)
             session.commit()
 
