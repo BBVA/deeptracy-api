@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import uuid
+import re
 from datetime import datetime, timedelta
 from sqlalchemy import text
 from behave import given, then, when
@@ -59,7 +60,7 @@ def step_impl(context, scan_id):
 
 @when(u'the scan with id {scan_id} has vulnerabilities')
 def step_impl(context, scan_id):
-    scan_id_str= '0000001'
+    scan_id_str = re.sub('"', '', scan_id)
     vulnerability_id = uuid.uuid4().hex
     library = "tar"
     version = "1.0.3"
