@@ -27,3 +27,17 @@ Feature: Create new scans
     And the ALLOWED_SCANS_CHECK_PERIOD config is set to 5
     When the user makes a "POST" request to "/api/1/scan/" endpoint with {"project_id":"123"}
     Then the api response code is 403
+
+
+  @only
+  Scenario Outline: Get Scans by Project Id
+    When the user makes a "POST" request to "/api/1/scan/" endpoint with {"project_id":"123", "lang": "lang"}
+    And  the user makes a "GET" request to "<endpoint>" endpoint with "empty"
+    Then the api response code is <response_code>
+    And the api response payload is <response>
+
+
+    Examples:
+      | endpoint                   | response_code | response                                                                                                                  |
+      | /api/1/project/123/scans   | 200           | [{"analysis_count": 0, "analysis_done": 0, "lang": "lang", "project_id": "123", "scan_analysis": [], "state": "PENDING"}] |
+      | /api/1/project/400/scans   | 404           | {"error": {"msg": "Project 400 not found in database"}}                                                                   |

@@ -184,3 +184,23 @@ def delete_projects():
             return api_error_response(exc.args[0]), 400
 
         return '', 204
+
+
+@project.route('/<string:project_id>/scans', methods=["GET"])
+def get_scans_by_project_id(project_id):
+    """Show Requested Scans by Project
+
+    Queries and returns all scans in a project with a passed ID
+
+    Example:
+
+    :return codes:  200 on success
+                    404 on errors
+    """
+    with db.session_scope() as session:
+        try:
+            scans = [scan.to_dict() for scan in project_manager.get_project(project_id, session).scans]
+        except Exception as exc:
+            return api_error_response(exc.args[0]), 404
+
+        return jsonify(scans), 200
