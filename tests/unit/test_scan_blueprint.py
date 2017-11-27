@@ -109,7 +109,6 @@ class ScanBlueprintTestCase(TestCase):
     @mock.patch('deeptracy_api.api.scan_blueprint.get_scan_vulnerabilities')
     def test_get_scan_vulnerabilities(self, mock_get_scan_vulnerabilities, mock_celery, mock_session):
         url = url_for('scan.get_vulnerabilities', scan_id='11')
-        print(url)
         mock_get_scan_vulnerabilities.return_value = ScanVulnerability(id='11')
 
         with self.app.test_request_context(url):
