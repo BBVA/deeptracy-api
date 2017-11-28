@@ -23,8 +23,8 @@ def step_impl(context):
     project_id = '123'
     plugin_lang = 'lang'
 
-    sql = text('INSERT INTO project (id, repo) VALUES (:id, :repo)')
-    context.engine.execute(sql, id=project_id, repo='http://test.com')
+    sql = text('INSERT INTO project (id, name, repo) VALUES (:id, :name, :repo)')
+    context.engine.execute(sql, id=project_id, name='test', repo='http://test.com')
 
     sql = text('INSERT INTO plugin (id, name, lang, active) VALUES (:id, :name, :lang, :active)')
     context.engine.execute(sql, id='123', name='plugin', lang=plugin_lang, active=True)
