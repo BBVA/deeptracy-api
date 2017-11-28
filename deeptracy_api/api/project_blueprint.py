@@ -51,9 +51,15 @@ def add_project():
     else:
         data.pop('repo')  # repo should not be present in data
 
+    name = data.get('name', None)
+    if name is None or name == '':
+        name = repo.split('/')[-1]
+    if data.get('name'):
+        data.pop('name')  # name should not be present in data
+
     with db.session_scope() as session:
         try:
-            project = project_manager.add_project(repo, session, **data)
+            project = project_manager.add_project(repo, name, session, **data)
             session.commit()
         except Exception as exc:
             session.rollback()
