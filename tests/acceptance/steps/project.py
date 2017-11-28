@@ -32,10 +32,11 @@ def step_impl(context):
 
 @when(u'a project with id "{project_id}" exists in the database')
 def step_impl(context, project_id):
-    sql = text('INSERT INTO project (id, repo, hook_data, hook_type, repo_auth_type) '
-               'VALUES (:id, :repo, :hook_data, :hook_type, :repo_auth_type)')
+    sql = text('INSERT INTO project (id, name, repo, hook_data, hook_type, repo_auth_type) '
+               'VALUES (:id, :name, :repo, :hook_data, :hook_type, :repo_auth_type)')
     context.engine.execute(sql,
                            id=project_id,
+                           name='test',
                            repo='http://test{}.com'.format(project_id),
                            hook_type='NONE',
                            hook_data='',
@@ -56,13 +57,3 @@ def step_impl(context):
     results = context.engine.execute(sql).fetchall()
 
     assert len(results) == 0
-
-
-@when(u'the user makes a "{method}" request to "/api/1/project/" endpoint')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: When the user makes a "DELETE" request to "/api/1/project/" endpoint')
-
-
-@when(u'the user makes a "GET" request to "<endpoint>" endpoint')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: When the user makes a "GET" request to "<endpoint>" endpoint')
