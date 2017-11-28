@@ -19,6 +19,7 @@ from flask.testing import FlaskClient
 
 from unittest import mock, TestCase
 from deeptracy_core.dal.scan.model import Scan
+from deeptracy_core.dal.models import ScanVulnerability
 
 from deeptracy_api.api.flask import setup_api
 import deeptracy_api.api.scan_blueprint as scan_blueprint
@@ -26,12 +27,12 @@ import deeptracy_api.api.scan_blueprint as scan_blueprint
 from . import utils
 
 
-class TestClient(FlaskClient):
+class MockClient(FlaskClient):
     def open(self, *args, **kwargs):
         if 'json' in kwargs:
             kwargs['data'] = json.dumps(kwargs.pop('json'))
             kwargs['content_type'] = 'application/json'
-        return super(TestClient, self).open(*args, **kwargs)
+        return super(MockClient, self).open(*args, **kwargs)
 
 
 @mock.patch('deeptracy_api.api.scan_blueprint.db.session_scope')
@@ -39,7 +40,7 @@ class ScanBlueprintTestCase(TestCase):
     def setUp(self):
         app = setup_api()
         app.config['SERVER_NAME'] = 'localhost'
-        app.test_client_class = TestClient
+        app.test_client_class = MockClient
         app.testing = True
         ctx = app.app_context()
         ctx.push()
@@ -103,3 +104,14 @@ class ScanBlueprintTestCase(TestCase):
             res = self.client.post(url, json={'project_id': '12', 'lang': 'nodejs'})
             self.assertEqual(res.status_code, 403)
             mock_num_scans.assert_called_once_with('12', 40, mock.ANY)
+
+    @mock.patch('deeptracy_api.api.scan_blueprint.Celery')
+    @mock.patch('deeptracy_api.api.scan_blueprint.get_scan_vulnerabilities')
+    def test_get_scan_vulnerabilities(self, mock_get_scan_vulnerabilities, mock_celery, mock_session):
+        url = url_for('scan.get_vulnerabilities', scan_id='11')
+        mock_get_scan_vulnerabilities.return_value = ScanVulnerability(id='11')
+
+        with self.app.test_request_context(url):
+            res = self.client.get(url)
+            self.assertEqual(res.status_code, 200)
+            mock_get_scan_vulnerabilities.assert_called_once_with('11', mock.ANY)
