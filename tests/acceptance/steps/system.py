@@ -18,6 +18,10 @@ from behave import given
 
 @given(u'an empty system')
 def step_impl(context):
+
+    sql = text('DELETE FROM scan_vulnerability')
+    context.engine.execute(sql)
+
     sql = text('DELETE FROM scan')
     context.engine.execute(sql)
 

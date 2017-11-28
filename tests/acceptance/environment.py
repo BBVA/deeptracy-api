@@ -13,17 +13,20 @@
 # limitations under the License.
 
 import os
-import sqlalchemy
-import redis
 
+import redis
 from urllib.parse import urlparse
+
+from deeptracy_core.dal.database import db
 
 
 def before_all(context):
     context.SERVER_ADDRESS = os.environ['SERVER_ADDRESS']
     context.BROKER_URI = os.environ['BROKER_URI']
 
-    context.engine = sqlalchemy.create_engine(os.environ['DATABASE_URI'])
+    db.init_engine(os.environ['DATABASE_URI'])
+    context.engine = db.engine
+
     context.redis_db = _setup_redis(context.BROKER_URI)
 
 
