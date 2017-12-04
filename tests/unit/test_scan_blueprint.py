@@ -76,7 +76,7 @@ class ScanBlueprintTestCase(TestCase):
         with self.app.test_request_context(url):
             res = self.client.post(url, json={'project_id': '12'})
             self.assertEqual(res.status_code, 201)
-            mock_add_scan.assert_called_once_with('12', mock.ANY, lang=None)
+            mock_add_scan.assert_called_once_with('12', mock.ANY, lang=None, branch='master')
 
     @mock.patch('deeptracy_api.api.scan_blueprint.Celery')
     @mock.patch('deeptracy_api.api.scan_blueprint.add_scan')
@@ -88,7 +88,7 @@ class ScanBlueprintTestCase(TestCase):
         with self.app.test_request_context(url):
             res = self.client.post(url, json={'project_id': '12', 'lang': 'nodejs'})
             self.assertEqual(res.status_code, 201)
-            mock_add_scan.assert_called_once_with('12', mock.ANY, lang='nodejs')
+            mock_add_scan.assert_called_once_with('12', mock.ANY, lang='nodejs', branch='master')
 
     @mock.patch('deeptracy_api.api.scan_blueprint.Celery')
     @mock.patch('deeptracy_api.api.scan_blueprint.get_num_scans_in_last_minutes')

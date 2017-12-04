@@ -14,11 +14,13 @@
 
 """Blueprint for scan endpoints"""
 import logging
+import requests
 
 from celery import Celery
 from flask import Blueprint, request
 from flask import jsonify
-from deeptracy_core.dal.scan.manager import add_scan, get_num_scans_in_last_minutes, get_scan, get_scan_vulnerabilities
+from deeptracy_core.dal.scan.manager import add_scan, get_num_scans_in_last_minutes, get_scan_vulnerabilities
+from deeptracy_core.dal.project.manager import get_project
 from deeptracy_core.dal.database import db
 
 from ..config import BROKER_URI, ALLOWED_SCANS_PER_PERIOD, ALLOWED_SCANS_CHECK_PERIOD
@@ -39,7 +41,8 @@ def post_scan():
         Body
         {
           "project_id": "00001",
-          "lang": "javascript"
+          "lang": "javascript",
+          "branch": "develop" //Optional
         }
 
     :return codes:  201 on success
@@ -53,6 +56,13 @@ def post_scan():
         project_id = get_required_field(data, 'project_id')
         lang = data.get('lang', None)
 
+        branch = data.get('branch', None)
+        if branch is None or branch == '':
+            branch = 'master'
+        else:
+            project = get_project(project_id, session)
+            command = 'git ls-remote --ref {}'.format(project.repo)
+
         # if defined, limit the number of scans that can be created by a given period for the same project
         logger.debug(' allowed scans per period {}/{}'.format(ALLOWED_SCANS_PER_PERIOD, ALLOWED_SCANS_CHECK_PERIOD))
         allowed_scan = True
@@ -61,7 +71,7 @@ def post_scan():
             allowed_scan = previous_scans < ALLOWED_SCANS_PER_PERIOD
 
         if allowed_scan:
-            scan = add_scan(project_id, session, lang=lang)
+            scan = add_scan(project_id, session, lang=lang, branch=branch)
             session.commit()
 
             # when the scan is added to the database, a celery task is inserted for that scan to start the process
