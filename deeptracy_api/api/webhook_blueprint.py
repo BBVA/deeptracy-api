@@ -42,7 +42,7 @@ def receive_hook():
         logger.debug('received request to process a webhook from bitbucket')
         handle_bitbucket_webhook(request.headers, request.get_json())
     elif request.headers.get('X-GitHub-Event', None) is not None:
-        logger.debug('received request to process a webhook forom github')
+        logger.debug('received request to process a webhook from github')
         handle_github_webhook(request.headers, request.get_json())
     else:
         logger.debug('received unparseable webhook post')

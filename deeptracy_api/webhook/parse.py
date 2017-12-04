@@ -75,9 +75,9 @@ def handle_github_webhook(request_headers, request_data):
     if request_headers.get('X-GitHub-Event') == 'push':
         repository = request_data.get('repository', {})
         repo_url = repository.get('url', None)
-
+        branch = request_data.get('ref', None).split('/')[-1]
         if repo_url is not None:
-            add_scan_for_project_with_repo(repo_url)
+            add_scan_for_project_with_repo(repo_url, branch)
         else:
             raise APIError('invalid repo', status_code=400)
     else:
@@ -127,11 +127,12 @@ def handle_bitbucket_webhook(request_headers, request_data):
         raise APIError('invalid event', status_code=400)
 
 
-def add_scan_for_project_with_repo(repo_url: str):
+def add_scan_for_project_with_repo(repo_url: str, branch: str=None):
     """
     If a project with repo_url exists in the database, adds a scan to it
 
-    :param repo_url: (str) repo url for the project to launch the
+    :param repo_url: (str) repo url for the project to launch the scan
+    :param branch: (str, Optional) branch for the project to launch the scan
     :return:
     """
     assert type(repo_url) is str
@@ -146,10 +147,10 @@ def add_scan_for_project_with_repo(repo_url: str):
             allowed_scan = previous_scans < ALLOWED_SCANS_PER_PERIOD
 
         if allowed_scan:
-            scan = add_scan(project.id, session)
+            scan = add_scan(project.id, session, branch=branch)
             session.commit()
 
             celery = Celery('deeptracy', broker=BROKER_URI)
-            celery.send_task('start_scan', [scan.id])
+            celery.send_task('prepare_scan', [scan.id])
         else:
             raise APIError('cant create more scans', status_code=503)
