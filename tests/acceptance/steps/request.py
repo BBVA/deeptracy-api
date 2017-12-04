@@ -26,16 +26,6 @@ def step_impl(context, method, endpoint, payload):
     else:
         res = requests.request(method, endpoint, json=json.loads(payload))
 
-    # print('------')
-    # print('------')
-    # print(res)
-    # try:
-    #     print(json.loads(res.text))
-    # except Exception:
-    #     pass
-    # print('------')
-    # print('------')
-
     context.last_response = res
 
 
@@ -66,19 +56,4 @@ def step_impl(context, response):
         json_expected.pop('id', None)
         json_expected.pop('created', None)
 
-    def ordered(obj):
-        if isinstance(obj, dict):
-            return sorted((k, ordered(v)) for k, v in obj.items())
-        if isinstance(obj, list):
-            return sorted(ordered(x) for x in obj)
-        else:
-            return obj
-    # print('------')
-    # print('------')
-    # print(json_data)
-    # print(json_expected)
-    # print('------')
-    # print('------')
-
     assert len(diff(json_data, json_expected)) == 0
-    assert json_data == json_expected
