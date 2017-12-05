@@ -15,6 +15,7 @@
 import requests
 from flask import json
 from behave import when, then
+from jsondiff import diff
 
 
 @when(u'the user makes a "{method}" request to "{endpoint}" endpoint with {payload}')
@@ -24,16 +25,6 @@ def step_impl(context, method, endpoint, payload):
         res = requests.request(method, endpoint)
     else:
         res = requests.request(method, endpoint, json=json.loads(payload))
-
-    # print('------')
-    # print('------')
-    # print(res)
-    # try:
-    #     print(json.loads(res.text))
-    # except Exception:
-    #     pass
-    # print('------')
-    # print('------')
 
     context.last_response = res
 
@@ -56,17 +47,13 @@ def step_impl(context, response):
     if isinstance(json_data, list):
         [data.pop('id', None) for data in json_data]
         [data.pop('created', None) for data in json_data]
+        [data.pop('id', None) for data in json_expected]
+        [data.pop('created', None) for data in json_expected]
+
     else:
         json_data.pop('id', None)
         json_data.pop('created', None)
         json_expected.pop('id', None)
         json_expected.pop('created', None)
 
-    # print('------')
-    # print('------')
-    # print(json_data)
-    # print(json_expected)
-    # print('------')
-    # print('------')
-
-    assert json_data == json_expected
+    assert len(diff(json_data, json_expected)) == 0

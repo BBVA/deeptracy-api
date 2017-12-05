@@ -51,9 +51,15 @@ def add_project():
     else:
         data.pop('repo')  # repo should not be present in data
 
+    name = data.get('name', None)
+    if name is None or name == '':
+        name = repo.split('/')[-1]
+    if data.get('name'):
+        data.pop('name')  # name should not be present in data
+
     with db.session_scope() as session:
         try:
-            project = project_manager.add_project(repo, session, **data)
+            project = project_manager.add_project(repo, name, session, **data)
             session.commit()
         except Exception as exc:
             session.rollback()
@@ -184,3 +190,23 @@ def delete_projects():
             return api_error_response(exc.args[0]), 400
 
         return '', 204
+
+
+@project.route('/<string:project_id>/scans', methods=["GET"])
+def get_scans_by_project_id(project_id):
+    """Show Requested Scans by Project
+
+    Queries and returns all scans in a project with a passed ID
+
+    Example:
+
+    :return codes:  200 on success
+                    404 on errors
+    """
+    with db.session_scope() as session:
+        try:
+            scans = [scan.to_dict() for scan in project_manager.get_project(project_id, session).scans]
+        except Exception as exc:
+            return api_error_response(exc.args[0]), 404
+
+        return jsonify(scans), 200

@@ -7,3 +7,4 @@ pytest-cov==2.5.1
 behave==1.2.5
 redis==2.10.6
 SQLAlchemy==1.1.14
+jsondiff==1.1.1
