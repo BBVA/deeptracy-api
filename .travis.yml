@@ -18,7 +18,13 @@ env:
     - LOG_LEVEL=INFO
 
 script:
-  - bash travis/script.sh
+  - tox
+  - docker-compose --version
+  - docker-compose -f tests/acceptance/docker-compose.yml up -d --build
+  - sleep 10
+  - behave --tags=-local tests/acceptance/features
+  - docker-compose -f tests/acceptance/docker-compose.yml kill
+  - docker-compose -f tests/acceptance/docker-compose.yml rm -f
 
 deploy:
 
@@ -27,8 +33,3 @@ deploy:
     script: release/image_dockerhub.sh
     on:
       branch: master
-
-  - provider: script
-    script: release/image_dockerhub_dev.sh
-    on:
-      branch: develop
