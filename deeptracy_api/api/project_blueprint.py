@@ -102,9 +102,13 @@ def get_projects():
     :return codes:  200 on success
                     404 on errors
     """
+    term = request.args.get('term')
     with db.session_scope() as session:
         try:
-            projects = project_manager.get_projects(session)
+            if term:
+                projects = project_manager.get_projects_by_name_term(term, 20, session)
+            else:
+                projects = project_manager.get_projects(session)
         except Exception as exc:
             return api_error_response(exc.args[0]), 400
 
