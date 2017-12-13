@@ -8,7 +8,7 @@ Feature: Update projects
     When a project with id "0000001" exists in the database
     When the user makes a "PUT" request to "/api/1/project/0000001" endpoint with <payload>
     Then the api response code is <response_code>
-    And the api response payload is <response>
+    And the json api response payload is <response>
 
     Examples:
       | payload                                                                   | response_code | response                                                                                                                                                 |

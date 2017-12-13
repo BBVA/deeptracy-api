@@ -10,7 +10,7 @@ Feature: Read scan vulnerabilities
     When the scan with id "<scan_id>" has vulnerabilities
     And the user makes a "GET" request to "<endpoint>" endpoint with <payload>
     Then the api response code is <response_code>
-    And the api response payload is <response>
+    And the json api response payload is <response>
 
     Examples:
       | scan_id      |  endpoint                                    | response_code       |  response                                                                                                                           |  payload  |

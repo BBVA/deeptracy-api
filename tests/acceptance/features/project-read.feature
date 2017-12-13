@@ -10,7 +10,7 @@ Feature: Read projects
     When a project with id "<project_id>" exists in the database
     And the user makes a "GET" request to "<endpoint>" endpoint with <payload>
     Then the api response code is <response_code>
-    And the api response payload is <response>
+    And the json api response payload is <response>
 
     Examples:
       | project_id      |  endpoint                          | response_code       |  response                                                                                                              |  payload  |
@@ -22,16 +22,28 @@ Feature: Read projects
     When a project with id "0000001" exists in the database
     When the user makes a "GET" request to "/api/1/project/" endpoint with empty
     Then the api response code is 200
-    And the api response payload is [{"repo": "http://test0000001.com", "name": "test", "scans": 0, "hookData": "", "hookType": "NONE", "authType": "PUBLIC"}]
+    And the json api response payload is [{"repo": "http://test0000001.com", "name": "test", "scans": 0, "hookData": "", "hookType": "NONE", "authType": "PUBLIC"}]
 
-  Scenario: Get a project by name term
+  Scenario Outline: Get a project by name term
       When a project with id "0000001" exists in the database
-      When the user makes a "GET" request to "/api/1/project/?term=es" endpoint with empty
+      When the user makes a "GET" request to "<endpoint>" endpoint with empty
       Then the api response code is 200
-      And the api response payload is [{"repo": "http://test0000001.com", "name": "test", "scans": 0, "hookData": "", "hookType": "NONE", "authType": "PUBLIC"}]
+      And the json api response payload is [{"repo": "http://test0000001.com", "name": "test", "scans": 0, "hookData": "", "hookType": "NONE", "authType": "PUBLIC"}]
+
+      Examples:
+      |  endpoint                |
+      |  /api/1/project/?term=es |
+      |  /api/1/project/?term=Es |
 
   Scenario: Get a project that not exist by name term
       When a project with id "0000001" exists in the database
       When the user makes a "GET" request to "/api/1/project/?term=es" endpoint with empty
       Then the api response code is 200
-      And the api response payload is []
+      And the json api response payload is []
+
+  @demo
+  Scenario: Get a project count
+      When a project with id "0000001" exists in the database
+      When the user makes a "GET" request to "/api/1/project/?filter=count" endpoint with empty
+      Then the api response code is 200
+      And the api response payload is 1

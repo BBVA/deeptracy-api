@@ -34,7 +34,7 @@ def step_impl(context, response_code):
     assert context.last_response.status_code == int(response_code)
 
 
-@then(u'the api response payload is {response}')
+@then(u'the json api response payload is {response}')
 def step_impl(context, response):
     if response == 'empty':
         json_data = {}
@@ -57,3 +57,9 @@ def step_impl(context, response):
         json_expected.pop('created', None)
 
     assert len(diff(json_data, json_expected)) == 0
+
+
+@then(u'the api response payload is {response}')
+def step_impl(context, response):
+    response_text = context.last_response.text.rstrip()
+    assert response_text is response

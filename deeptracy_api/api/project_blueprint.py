@@ -102,19 +102,28 @@ def get_projects():
     :return codes:  200 on success
                     404 on errors
     """
-    term = request.args.get('term')
+    filter = request.args.get('filter')
+
     with db.session_scope() as session:
         try:
-            if term:
-                projects = project_manager.get_projects_by_name_term(term, 20, session)
+            if filter:
+                if filter == 'count':
+                    return jsonify(project_manager.get_projects_count(session)), 200
+                else:
+                    return api_error_response('Filter not exists'), 400
             else:
-                projects = project_manager.get_projects(session)
+                term = request.args.get('term')
+
+                if term:
+                    projects = project_manager.get_projects_by_name_term(term, 20, session)
+                else:
+                    projects = project_manager.get_projects(session)
+
+                project_arr = [project.to_dict() for project in projects]
+
+                return jsonify(project_arr), 200
         except Exception as exc:
             return api_error_response(exc.args[0]), 400
-
-        project_arr = [project.to_dict() for project in projects]
-
-        return jsonify(project_arr), 200
 
 
 @project.route('/<string:project_id>', methods=["PUT"])
