@@ -24,11 +24,16 @@ Feature: Read projects
     Then the api response code is 200
     And the api response payload is [{"repo": "http://test0000001.com", "name": "test", "scans": 0, "hookData": "", "hookType": "NONE", "authType": "PUBLIC"}]
 
-  Scenario: Get a project by name term
+  Scenario Outline: Get a project by name term
       When a project with id "0000001" exists in the database
-      When the user makes a "GET" request to "/api/1/project/?term=es" endpoint with empty
+      When the user makes a "GET" request to "<endpoint>" endpoint with empty
       Then the api response code is 200
       And the api response payload is [{"repo": "http://test0000001.com", "name": "test", "scans": 0, "hookData": "", "hookType": "NONE", "authType": "PUBLIC"}]
+
+      Examples:
+      |  endpoint                |
+      |  /api/1/project/?term=es |
+      |  /api/1/project/?term=Es |
 
   Scenario: Get a project that not exist by name term
       When a project with id "0000001" exists in the database
