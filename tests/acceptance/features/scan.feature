@@ -9,7 +9,7 @@ Feature: Create new scans
   Scenario Outline: Create scan
     When the user makes a "POST" request to "/api/1/scan/" endpoint with <payload>
     Then the api response code is <response_code>
-    And the api response payload is <response>
+    And the json api response payload is <response>
     And <created> scans are in the database
     And <created> celery tasks of type prepare_scan are in the broker
 
@@ -35,7 +35,7 @@ Feature: Create new scans
     When the user makes a "POST" request to "/api/1/scan/" endpoint with {"project_id":"123", "lang": "lang"}
     And  the user makes a "GET" request to "<endpoint>" endpoint with "empty"
     Then the api response code is <response_code>
-    And the api response payload is <response>
+    And the json api response payload is <response>
 
 
     Examples:
