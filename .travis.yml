@@ -12,7 +12,7 @@ install:
 env:
   global:
     - BROKER_URI=redis://127.0.0.1:6379
-    - DATABASE_URI=postgresql://postgres:postgres@127.0.0.1:5432/deeptracy
+    - DATABASE_URI=postgresql://postgres:postgres@127.0.0.1:5433/deeptracy
     - SERVER_ADDRESS=localhost:8080
     - GUNICORN_WORKERS=1
     - LOG_LEVEL=INFO
