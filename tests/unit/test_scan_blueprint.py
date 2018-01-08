@@ -19,7 +19,7 @@ from flask.testing import FlaskClient
 
 from unittest import mock, TestCase
 from deeptracy_core.dal.scan.model import Scan
-from deeptracy_core.dal.models import ScanVulnerability
+from deeptracy_core.dal.scan_vul.model import ScanVulnerability
 
 from deeptracy_api.api.flask import setup_api
 import deeptracy_api.api.scan_blueprint as scan_blueprint
