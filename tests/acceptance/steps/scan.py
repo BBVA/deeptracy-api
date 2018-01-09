@@ -22,16 +22,11 @@ from behave import given, then, when
 @given(u'a database ready to receive scans')
 def step_impl(context):
     project_id = '123'
-    plugin_lang = 'lang'
 
     sql = text('INSERT INTO project (id, name, repo) VALUES (:id, :name, :repo)')
     context.engine.execute(sql, id=project_id, name='test', repo='http://test.com')
 
-    sql = text('INSERT INTO plugin (id, name, lang, active) VALUES (:id, :name, :lang, :active)')
-    context.engine.execute(sql, id='123', name='plugin', lang=plugin_lang, active=True)
-
     context.project_id = project_id
-    context.plugin_lang = plugin_lang
 
 
 @then(u'{created} scans are in the database')
@@ -64,15 +59,13 @@ def step_impl(context, scan_id):
     vulnerability_id = uuid.uuid4().hex
     library = "tar"
     version = "1.0.3"
-    severity = "1"
-    summary = ""
-    advisory = ""
+    max_score = "9"
 
     created = datetime.now() - timedelta(minutes=3)
     sql = text('INSERT INTO scan (id, project_id, created) VALUES (:id, :project_id, :created)')
     context.engine.execute(sql, id=scan_id_str, project_id=context.project_id, created=created)
 
-    sql = text('INSERT INTO scan_vulnerability (id, scan_id, library, version, severity, summary, advisory) '
-               'VALUES (:id, :scan_id, :library, :version, :severity, :summary, :advisory)')
+    sql = text('INSERT INTO scan_vulnerability (id, scan_id, library, version, max_score) '
+               'VALUES (:id, :scan_id, :library, :version, :max_score)')
     context.engine.execute(sql, id=vulnerability_id, scan_id=scan_id_str, library=library, version=version,
-                           severity=severity, summary=summary, advisory=advisory)
+                           max_score=max_score)

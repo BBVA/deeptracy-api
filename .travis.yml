@@ -18,6 +18,7 @@ env:
     - LOG_LEVEL=INFO
 
 script:
+  - pip install -r requirements_test.txt
   - tox
   - docker-compose --version
   - docker-compose -f tests/acceptance/docker-compose.yml up -d --build
