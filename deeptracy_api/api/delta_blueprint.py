@@ -44,6 +44,7 @@ def post_delta():
     """
     with db.session_scope() as session:
         data = request.get_json()
+
         if not data:
             return api_error_response('invalid payload'), 400
 
