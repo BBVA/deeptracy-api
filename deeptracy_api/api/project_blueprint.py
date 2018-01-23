@@ -30,7 +30,7 @@ project = Blueprint("project", __name__)
 
 
 @project.route('/', methods=["POST"])
-def add_project():
+def post_project():
     """Adds a project to the database
 
     It receive a Project in the body as a json object and tries to create the project in the database
@@ -237,7 +237,7 @@ def get_scans_by_project_id(project_id):
 
 
 @project.route('/<string:project_id>/email', methods=["PATCH"])
-def update_project_email(project_id):
+def patch_project_email(project_id):
     """Update the user email for the Project
 
     Update the email for the project with project_id
@@ -254,7 +254,7 @@ def update_project_email(project_id):
 
         email = data.get('email', None)
         if email is None or email == '':
-            return api_error_response('missing repo'), 400
+            return api_error_response('missing remail'), 400
 
         try:
             project = project_manager.get_project(project_id, session)

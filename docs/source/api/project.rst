@@ -189,3 +189,31 @@
 
    :statuscode 204: No content. Project removed successfully
    :statuscode 404: Project not found
+
+
+.. http:patch:: /project/(int:project_id)/email
+
+   Update Project email
+
+   **Example request**:
+
+   .. sourcecode:: http
+
+      PATCH /api/1/project/email HTTP/1.1
+      Host: example.com
+      Accept: application/json, text/javascript
+
+   **Example response**:
+
+   .. sourcecode:: http
+
+      HTTP/1.1 200 OK
+      Vary: Accept
+      Content-Type: text/javascript
+
+      {
+        "email": "demoi@demo.com"
+      }
+
+   :statuscode 200: A project
+   :statuscode 404: Project not found
