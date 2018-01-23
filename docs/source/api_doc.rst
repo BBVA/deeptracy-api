@@ -25,3 +25,4 @@ Endpoints
     api/project_blueprint
     api/scan_blueprint
     api/webhook_blueprint
+    api/delta_blueprint

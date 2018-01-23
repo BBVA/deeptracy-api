@@ -14,12 +14,15 @@
 
 """Blueprint for project endpoints"""
 
+import json
+
 from flask import Blueprint, request
 from flask import jsonify
 
 from deeptracy_core.dal.project.model import Project
 import deeptracy_core.dal.project.manager as project_manager
 from deeptracy_core.dal.database import db
+from deeptracy_core.dal.project.project_hooks import ProjectHookType
 
 from .utils import api_error_response
 
@@ -57,9 +60,17 @@ def add_project():
     if data.get('name'):
         data.pop('name')  # name should not be present in data
 
+    email = data.get('email', None)
+    if email is not None:
+        hook_type = ProjectHookType.EMAIL.name
+        hook_data = {"email": email}
+    else:
+        hook_type = ProjectHookType.NONE.name
+        hook_data = {}
+
     with db.session_scope() as session:
         try:
-            project = project_manager.add_project(repo, name, session, **data)
+            project = project_manager.add_project(repo, name, session, hook_type=hook_type, hook_data=hook_data, **data)
             session.commit()
         except Exception as exc:
             session.rollback()
@@ -223,3 +234,44 @@ def get_scans_by_project_id(project_id):
             return api_error_response(exc.args[0]), 404
 
         return jsonify(scans), 200
+
+
+@project.route('/<string:project_id>/email', methods=["PATCH"])
+def update_project_email(project_id):
+    """Update the user email for the Project
+
+    Update the email for the project with project_id
+
+    Example:
+
+    :return codes:  200 on success
+                    404 on errors
+    """
+    with db.session_scope() as session:
+        data = request.get_json()
+        if not data:
+            return api_error_response('invalid payload'), 400
+
+        email = data.get('email', None)
+        if email is None or email == '':
+            return api_error_response('missing repo'), 400
+
+        try:
+            project = project_manager.get_project(project_id, session)
+            hook_type = project.hook_type
+            if project.hook_data:
+                hook_data_dict = json.loads(project.hook_data)
+            else:
+                hook_data_dict = {}
+
+            if hook_type == ProjectHookType.NONE.name:
+                hook_type = ProjectHookType.EMAIL.name
+            elif hook_type == ProjectHookType.SLACK.name:
+                hook_type = ProjectHookType.SLACK_EMAIL.name
+
+            hook_data_dict['email'] = email
+            project_manager.update_project(project_id, session, hook_type=hook_type, hook_data=hook_data_dict)
+        except Exception as exc:
+            return api_error_response(exc.args[0]), 404
+
+        return jsonify(project.to_dict()), 200

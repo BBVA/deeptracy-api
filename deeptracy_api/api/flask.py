@@ -20,6 +20,7 @@ from flask_cors import CORS
 
 from .project_blueprint import project
 from .scan_blueprint import scan
+from .delta_blueprint import delta
 from .webhook_blueprint import webhook
 from .exc import APIError
 
@@ -79,3 +80,4 @@ def load_blueprints(flask_app):
     flask_app.register_blueprint(webhook, url_prefix=prev1 + '/webhook')
     flask_app.register_blueprint(project, url_prefix=prev1 + '/project')
     flask_app.register_blueprint(scan, url_prefix=prev1 + '/scan')
+    flask_app.register_blueprint(delta, url_prefix=prev1 + '/delta')
