@@ -123,6 +123,29 @@ paths:
           description: Project not found.
           schema:
             $ref: '#/definitions/Error'
+  /project/{id}/email:
+    patch:
+      summary: Update email of Project
+      description: |
+        Update email of Project.
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: |
+            A unique project identifier to query.
+        - name: email
+          in: body
+          schema:
+            type: string
+            description: A email text
+      responses:
+        201:
+          description: A project.
+          schema:
+            $ref: '#/definitions/Project'
 definitions:
   Project:
     type: object
