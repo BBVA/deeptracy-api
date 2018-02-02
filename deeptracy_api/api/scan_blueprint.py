@@ -14,12 +14,13 @@
 
 """Blueprint for scan endpoints"""
 import logging
-import requests
 
 from celery import Celery
 from flask import Blueprint, request
 from flask import jsonify
 from deeptracy_core.dal.scan.manager import add_scan, get_num_scans_in_last_minutes, get_scan_vulnerabilities
+from deeptracy_core.dal.scan_dep.manager import get_scan_dep_by_id
+from deeptracy_core.dal.vulnerability.manager import get_vulns_for_cpe
 from deeptracy_core.dal.project.manager import get_project
 from deeptracy_core.dal.database import db
 
@@ -89,7 +90,21 @@ def get_vulnerabilities(scan_id):
     with db.session_scope() as session:
         try:
             scan_vulnerabilities = [scan_vulnerability.to_dict() for scan_vulnerability in get_scan_vulnerabilities(scan_id, session)]
+            response = []
+
+            def fillResponse(scan_vulnerability):
+                vulns = get_vulns_for_cpe(scan_vulnerability['cpe'], session)
+                scan_dep = get_scan_dep_by_id(scan_vulnerability['scan_dep_id'], session)
+                return [response.append(
+                    {
+                        'library': scan_dep.library,
+                        'version': scan_dep.version,
+                        'cpe': vuln.cpe,
+                        'cve': vuln.cve
+                    }) for vuln in vulns]
+
+            [ fillResponse(scan_vulnerability) for scan_vulnerability in scan_vulnerabilities]
         except Exception as exc:
             return api_error_response(exc.args[0]), 404
 
-        return jsonify(scan_vulnerabilities)
+        return jsonify(response)

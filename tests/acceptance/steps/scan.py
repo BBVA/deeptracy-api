@@ -57,15 +57,28 @@ def step_impl(context, scan_id):
 def step_impl(context, scan_id):
     scan_id_str = re.sub('"', '', scan_id)
     vulnerability_id = uuid.uuid4().hex
+    lang = "nodejs"
+    cpe = "cpe:demo"
+    max_score = "9.5"
+    scan_dep_id = "11"
     library = "tar"
-    version = "1.0.3"
-    max_score = "9"
+    version = "1.3.3"
+    scan_vulnerability_id = uuid.uuid4().hex
 
     created = datetime.now() - timedelta(minutes=3)
     sql = text('INSERT INTO scan (id, project_id, created) VALUES (:id, :project_id, :created)')
     context.engine.execute(sql, id=scan_id_str, project_id=context.project_id, created=created)
 
-    sql = text('INSERT INTO scan_vulnerability (id, scan_id, library, version, max_score) '
-               'VALUES (:id, :scan_id, :library, :version, :max_score)')
-    context.engine.execute(sql, id=vulnerability_id, scan_id=scan_id_str, library=library, version=version,
-                           max_score=max_score)
+    sql = text('INSERT INTO scan_dep (id, scan_id, library, version, raw_dep, found_at) '
+               'VALUES (:id, :scan_id, :library, :version, :raw_dep, :found_at)')
+    context.engine.execute(sql, id=scan_dep_id, scan_id=scan_id_str, library=library, version=version,
+                           raw_dep='{}:{}'.format(library, version), found_at=created)
+
+    sql = text('INSERT INTO scan_vulnerability (id, scan_id, lang, cpe, max_score, scan_dep_id) '
+               'VALUES (:id, :scan_id, :lang, :cpe, :max_score, :scan_dep_id)')
+    context.engine.execute(sql, id=scan_vulnerability_id, scan_id=scan_id_str, lang=lang, cpe=cpe,
+                           max_score=max_score, scan_dep_id=scan_dep_id)
+
+    sql = text('INSERT INTO vulnerabilities_in_scans (vulnerability_id, scan_dep_id) '
+               'VALUES (:vulnerability_id, :scan_dep_id)')
+    context.engine.execute(sql, vulnerability_id=scan_vulnerability_id, scan_dep_id=scan_dep_id)
