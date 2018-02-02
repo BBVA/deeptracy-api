@@ -18,7 +18,7 @@ Feature: Create new projects
       | {"repo":""}                  | 400           | {"error": {"msg": "missing repo"}}                                                        | 0       |
       | {}                           | 400           | {"error": {"msg": "invalid payload"}}                                                     | 0       |
 
-  @demo
+  @only
   Scenario: Add a project with a duplicated repo is forbidden
     When the user makes a "POST" request to "/api/1/project/" endpoint with {"repo":"https://github.com/BBVA/deeptracy"}
     And the user makes a "POST" request to "/api/1/project/" endpoint with {"repo":"https://github.com/BBVA/deeptracy"}
