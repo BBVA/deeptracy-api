@@ -41,7 +41,7 @@ Feature: Read projects
       Then the api response code is 200
       And the json api response payload is []
 
-  @demo
+  @only
   Scenario: Get a project count
       When a project with id "0000001" exists in the database
       When the user makes a "GET" request to "/api/1/project/?filter=count" endpoint with empty
